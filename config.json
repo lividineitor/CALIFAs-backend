@@ -1,0 +1,7 @@
+{
+    "artifactId": "CALIFAs",
+    "invokerPackage": "tsis.proyecto",
+    "configPackage": "tsis.proyecto.configuration",
+    "modelPackage": "tsis.proyecto.api.dto",
+    "apiPackage": "tsis.proyecto.api"
+}
