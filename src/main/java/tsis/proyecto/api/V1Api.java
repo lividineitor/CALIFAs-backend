@@ -15,6 +15,7 @@ import tsis.proyecto.api.dto.InlineResponse2003;
 import tsis.proyecto.api.dto.InlineResponse2004;
 import tsis.proyecto.api.dto.JuegoDto;
 import tsis.proyecto.api.dto.JuegosJuegoIdBody;
+import tsis.proyecto.api.dto.LoginDto;
 import tsis.proyecto.api.dto.PptDto;
 import tsis.proyecto.api.dto.PptsJuegoIdBody;
 import tsis.proyecto.api.dto.PreferenciaDto;
@@ -305,6 +306,8 @@ public interface V1Api {
         
         @ApiResponse(responseCode = "400", description = "Consulta mal construida.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Error.class))),
         
+        @ApiResponse(responseCode = "401", description = "Login fallido.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Error.class))),
+        
         @ApiResponse(responseCode = "404", description = "El usuario no existe.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Error.class))),
         
         @ApiResponse(responseCode = "500", description = "Error interno durante la consulta.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Error.class))),
@@ -312,8 +315,9 @@ public interface V1Api {
         @ApiResponse(responseCode = "501", description = "Operación no implementada.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Error.class))) })
     @RequestMapping(value = "/v1/usuarios/login",
         produces = { "application/json" }, 
+        consumes = { "application/json" }, 
         method = RequestMethod.POST)
-    ResponseEntity<TokenDto> existUsuario(@Parameter(in = ParameterIn.HEADER, description = "El nombre del usuario." ,required=true,schema=@Schema()) @RequestHeader(value="nombre", required=true) String nombre, @Parameter(in = ParameterIn.HEADER, description = "La contraseña del usuario." ,required=true,schema=@Schema()) @RequestHeader(value="password", required=true) String password);
+    ResponseEntity<TokenDto> existUsuario(@Parameter(in = ParameterIn.DEFAULT, description = "", schema=@Schema()) @Valid @RequestBody LoginDto body);
 
 
     @Operation(summary = "Recupera todas las colas del sistema.", description = "Regresa un arreglo de objetos colaDto que contiene el catálogo de colas del sistema.", tags={ "colas" })

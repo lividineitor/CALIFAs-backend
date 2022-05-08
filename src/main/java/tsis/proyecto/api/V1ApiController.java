@@ -10,6 +10,7 @@ import tsis.proyecto.api.dto.InlineResponse2003;
 import tsis.proyecto.api.dto.InlineResponse2004;
 import tsis.proyecto.api.dto.JuegoDto;
 import tsis.proyecto.api.dto.JuegosJuegoIdBody;
+import tsis.proyecto.api.dto.LoginDto;
 import tsis.proyecto.api.dto.PptDto;
 import tsis.proyecto.api.dto.PptsJuegoIdBody;
 import tsis.proyecto.api.dto.PreferenciaDto;
@@ -43,6 +44,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -50,6 +52,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.constraints.*;
 import javax.validation.Valid;
@@ -59,6 +62,7 @@ import java.util.List;
 import java.util.Map;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2022-05-05T21:21:27.284150-05:00[America/Mexico_City]")
+@CrossOrigin
 @RestController
 public class V1ApiController implements V1Api {
 
@@ -196,18 +200,40 @@ public class V1ApiController implements V1Api {
         return new ResponseEntity<Void>(HttpStatus.NOT_IMPLEMENTED);
     }
 
-    public ResponseEntity<TokenDto> existUsuario(@Parameter(in = ParameterIn.HEADER, description = "El nombre del usuario." ,required=true,schema=@Schema()) @RequestHeader(value="nombre", required=true) String nombre,@Parameter(in = ParameterIn.HEADER, description = "La contraseña del usuario." ,required=true,schema=@Schema()) @RequestHeader(value="password", required=true) String password) {
-        String accept = request.getHeader("Accept");
+    public ResponseEntity<TokenDto> existUsuario(@Parameter(in = ParameterIn.DEFAULT, description = "", schema=@Schema()) @Valid @RequestBody LoginDto body) {    	
+    	String accept = request.getHeader("Accept");
         if (accept != null && accept.contains("application/json")) {
-            try {
-                return new ResponseEntity<TokenDto>(objectMapper.readValue("{\n  \"tokenId\" : 1234,\n  \"token\" : \"Adsfsl2342\"\n}", TokenDto.class), HttpStatus.OK);
-            } catch (IOException e) {
-                log.error("Couldn't serialize response for content type application/json", e);
-                return new ResponseEntity<TokenDto>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
+       	
+        	Usuario usuario = new Usuario () ;
+        	
+        	usuario.setEmail(body.getEmail());
+        	usuario.setPassword(body.getPassword()) ;
+        	
+        	try {
+        		 TokenDto tokenDto = servicioUsuario.existUsuario( usuario ) ;
+            	return ResponseEntity.status(HttpStatus.OK).body(tokenDto);
+        	}
+        	
+        	catch ( IllegalArgumentException ex ) {
+            	throw new ResponseStatusException(HttpStatus.UNAUTHORIZED , ex.getMessage() );
+        	}
+        	
+        	catch ( SecurityException ex ) {
+            	throw new ResponseStatusException( HttpStatus.CONFLICT, ex.getMessage() );
+        	}
+        	
+        	catch ( NullPointerException ex ) {
+            	throw new ResponseStatusException( HttpStatus.NOT_FOUND, ex.getMessage() );
+        	}
+        	
+        	catch ( Exception ex ) {
+            	throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED , ex.getLocalizedMessage());
+        	}
         }
-
-        return new ResponseEntity<TokenDto>(HttpStatus.NOT_IMPLEMENTED);
+        
+        else
+        	throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED);
+        
     }
 
     public ResponseEntity<InlineResponse2003> getColas() {

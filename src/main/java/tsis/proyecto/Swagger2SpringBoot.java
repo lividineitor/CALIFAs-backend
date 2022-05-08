@@ -53,7 +53,15 @@ public class Swagger2SpringBoot implements CommandLineRunner {
 		
 		this.usuarioRepository.save(prueba1) ;
 		
-		System.out.println ( prueba1 ) ;
+		Usuario prueba2 = new Usuario () ;
+		
+		prueba2.setNombre("Ale");
+		prueba2.setEmail("ale@ale.ale");
+		prueba2.setRol("Admin");
+		prueba2.setPassword("ale");
+		
+		this.usuarioRepository.save(prueba2) ;
+		
     }
 
     @Configuration
