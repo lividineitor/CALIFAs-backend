@@ -178,7 +178,7 @@ public interface V1Api {
         produces = { "application/json" }, 
         consumes = { "application/json" }, 
         method = RequestMethod.POST)
-    ResponseEntity<UsuarioDto> createUsuario(@Parameter(in = ParameterIn.DEFAULT, description = "", schema=@Schema()) @Valid @RequestBody V1UsuariosBody body);
+    ResponseEntity<UsuarioDto> createUsuario(@Parameter(in = ParameterIn.DEFAULT, description = "", schema=@Schema()) @Valid @RequestBody UsuarioDto body);
 
 
     @Operation(summary = "Elimina todas las colas del sistema.", description = "Elimina todas las colas del sistema y sus datos.", tags={ "colas" })

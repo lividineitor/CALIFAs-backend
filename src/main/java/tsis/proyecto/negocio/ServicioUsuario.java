@@ -30,24 +30,60 @@ public class ServicioUsuario {
 
 	/**
 	 * 
+	 * Crea un usuario nuevo.
+	 * 
+	 * @param usuario El usuario a crear.
+	 * @return Usuario El nuevo usuario en el sistema.
+	 * 
+	 */
+	public Usuario createUsuario ( Usuario usuario ) throws Exception , SecurityException {
+
+		Usuario usuarioTemporal ;
+		
+		usuario.setUsuarioId(0);
+		usuarioTemporal = findByEmail(usuario.getEmail()) ;
+
+		if ( usuarioTemporal == null ) {
+			usuarioTemporal = usuarioRepository.save(usuario);
+			if ( usuarioTemporal.getUsuarioId() == 0 ) {
+				throw new Exception( "No se pudo crear el usuario." ) ;
+			}	
+		}
+		
+		else {
+			throw new SecurityException( "Usuario ya existe en el sistema." ) ;
+		}
+		
+		return usuarioTemporal ;
+	}
+	
+	
+	/**
+	 * 
 	 * Convierte un UsuarioDto a Usuario
 	 * 
 	 * @param usuarioDto El UsuairoDto a convertir.
 	 * @return Usuario El usuario convertido.
 	 * 
 	 */
-	public Usuario dtoToUsuario ( UsuarioDto usuarioDto ) {
+	public Usuario dtoToUsuario ( UsuarioDto usuarioDto ) throws NullPointerException {
 
-		Usuario usuarioRetorno = new Usuario () ;
+		if ( usuarioDto != null ) {
+			Usuario usuarioRetorno = new Usuario () ;
+			
+			usuarioRetorno.setUsuarioId ( usuarioDto.getUsuarioId() ) ;
+			usuarioRetorno.setNombre ( usuarioDto.getNombre() ) ;
+			usuarioRetorno.setPassword ( usuarioDto.getPassword() ) ;
+			usuarioRetorno.setEmail( usuarioDto.getEmail() ) ;
+			
+			usuarioRetorno.setRol( "Indefinido" );
+			
+			return usuarioRetorno ;
+		}
 		
-		usuarioRetorno.setUsuarioId ( usuarioDto.getUsuarioId() ) ;
-		usuarioRetorno.setNombre ( usuarioDto.getNombre() ) ;
-		usuarioRetorno.setPassword ( usuarioDto.getPassword() ) ;
-		usuarioRetorno.setEmail( usuarioDto.getEmail() ) ;
-		
-		usuarioRetorno.setRol( "Indefinido" );
-		
-		return usuarioRetorno ;
+		else {
+			throw new NullPointerException( "Usuario nulo." ) ;
+		}
 	}
 	
 	/**
@@ -61,7 +97,7 @@ public class ServicioUsuario {
 	public TokenDto existUsuario ( Usuario usuario ) throws NullPointerException , IllegalArgumentException , SecurityException {
 		TokenDto dto = new TokenDto () ;
 		
-		Usuario usuarioRecuperado = usuarioRepository.findByEmail( usuario.getEmail() ) ;
+		Usuario usuarioRecuperado = findByEmail( usuario.getEmail() ) ;
 		
 		if ( usuarioRecuperado != null ) {
 			if ( usuarioRecuperado.getPassword ().equals( usuario.getPassword() ) ) {
@@ -110,22 +146,7 @@ public class ServicioUsuario {
 		return usuarioARetornar ;
 	}
 	
-	/**
-	 * 
-	 * Método que busca a un usuario por su email.
-	 * 
-	 * @param email Email del usuario a buscar.
-	 * @return Usuario si se encontró o un usuario vacío de lo contrario.
-	 * 
-	 */	
-	public Usuario findByEmail ( String email ) {
-		
-		Usuario usuarioRecuperado ;
-		
-		usuarioRecuperado = usuarioRepository.findByEmail ( email ) ;
-		
-		return usuarioRecuperado ;
-	}
+
 	
 	/**
 	 * 
@@ -135,7 +156,7 @@ public class ServicioUsuario {
 	 * @return Usuario si se encontró o un usuario vacío de lo contrario.
 	 * 
 	 */	
-	public Usuario findByNombre ( String nombre ) {
+/*	public Usuario findByNombre ( String nombre ) {
 		
 		Usuario usuarioRecuperado ;
 		
@@ -143,7 +164,7 @@ public class ServicioUsuario {
 		
 		return usuarioRecuperado ;
 	}
-	
+*/	
 	/**
 	 * 
 	 * Método que valida si el password de quien quiere entrar al sistema corresponde con un usuario ya registrado.
@@ -153,6 +174,29 @@ public class ServicioUsuario {
 	 */	
 	public boolean validarPassword ( String usuarioSistemaPassword , String usuarioExternoPassword ) {
 		return usuarioSistemaPassword.equals( usuarioExternoPassword ) ;
+	}
+	
+	// Todos los métodos privados
+	
+	/**
+	 * 
+	 * Método que busca a un usuario por su email.
+	 * 
+	 * @param email Email del usuario a buscar.
+	 * @return Usuario si se encontró o un usuario vacío de lo contrario.
+	 * 
+	 */	
+	private Usuario findByEmail ( String email ) {
+		
+		Usuario usuarioARetornar = null ;
+		Optional<Usuario> usuarioRecuperado ;
+		
+		usuarioRecuperado = usuarioRepository.findByEmail ( email ) ;
+		
+		if ( !usuarioRecuperado.isEmpty() )
+			usuarioARetornar = usuarioRecuperado.get() ;
+		
+		return usuarioARetornar ;
 	}
 	
 }

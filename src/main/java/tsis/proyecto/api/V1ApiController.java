@@ -151,14 +151,27 @@ public class V1ApiController implements V1Api {
         return new ResponseEntity<TurnoDto>(HttpStatus.NOT_IMPLEMENTED);
     }
 
-    public ResponseEntity<UsuarioDto> createUsuario(@Parameter(in = ParameterIn.DEFAULT, description = "", schema=@Schema()) @Valid @RequestBody V1UsuariosBody body) {
+    public ResponseEntity<UsuarioDto> createUsuario(@Parameter(in = ParameterIn.DEFAULT, description = "", schema=@Schema()) @Valid @RequestBody UsuarioDto body) {
         String accept = request.getHeader("Accept");
         if (accept != null && accept.contains("application/json")) {
             try {
-                return new ResponseEntity<UsuarioDto>(objectMapper.readValue("{\n  \"password\" : \"losFulanitosSonPersonas\",\n  \"usuarioId\" : 1234,\n  \"nombre\" : \"fulanito\",\n  \"email\" : \"fulanito@de.tal\"\n}", UsuarioDto.class), HttpStatus.NOT_IMPLEMENTED);
-            } catch (IOException e) {
-                log.error("Couldn't serialize response for content type application/json", e);
-                return new ResponseEntity<UsuarioDto>(HttpStatus.INTERNAL_SERVER_ERROR);
+            	Usuario usuario = servicioUsuario.dtoToUsuario(body) ;
+            	
+            	usuario = servicioUsuario.createUsuario(usuario) ;
+            	
+            	UsuarioDto dto = new UsuarioDto () ;
+            	dto = dto.toDto(usuario) ;
+            	
+            	return ResponseEntity.status(HttpStatus.CREATED).body(dto) ;
+            	
+            } 
+            
+            catch ( SecurityException ex ) {
+            	throw new ResponseStatusException(HttpStatus.CONFLICT , ex.getMessage()) ;
+            }
+            
+            catch (Exception ex) {
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
             }
         }
 

@@ -5,6 +5,7 @@ import org.springframework.data.repository.CrudRepository;
 import tsis.proyecto.negocio.modelo.Usuario;
 
 import java.util.List ;
+import java.util.Optional;
 
 /**
  * 
@@ -15,6 +16,5 @@ import java.util.List ;
  */
 
 public interface UsuarioRepository  extends CrudRepository <Usuario, Long> {
-	public Usuario findByNombre ( String nombre ) ;
-	public Usuario findByEmail ( String email ) ;
+	public Optional<Usuario> findByEmail ( String email ) ;
 }
