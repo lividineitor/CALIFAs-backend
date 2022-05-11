@@ -1,5 +1,7 @@
 package tsis.proyecto.api.dto;
 
+import java.time.LocalTime;
+import java.util.Map;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -17,10 +19,13 @@ import javax.validation.constraints.*;
 
 public class JuegoDto   {
   @JsonProperty("juegoId")
-  private Integer juegoId = null;
+  private Long juegoId = null;
 
   @JsonProperty("nombre")
   private String nombre = null;
+  
+  @JsonProperty("juegoIdDeReferencia")
+  private Long juegoIdDeReferencia = null;
 
   @JsonProperty("cantidadDeUsuariosMinima")
   private Integer cantidadDeUsuariosMinima = null;
@@ -32,9 +37,9 @@ public class JuegoDto   {
   private String logotipo = null;
 
   @JsonProperty("esperaEntreTurnos")
-  private String esperaEntreTurnos = null;
+  private LocalTime esperaEntreTurnos = null;
 
-  public JuegoDto juegoId(Integer juegoId) {
+  public JuegoDto juegoId(Long juegoId) {
     this.juegoId = juegoId;
     return this;
   }
@@ -46,11 +51,11 @@ public class JuegoDto   {
   @Schema(example = "1234", required = true, description = "El identificador del juego.")
       @NotNull
 
-    public Integer getJuegoId() {
+    public Long getJuegoId() {
     return juegoId;
   }
 
-  public void setJuegoId(Integer juegoId) {
+  public void setJuegoId(Long juegoId) {
     this.juegoId = juegoId;
   }
 
@@ -74,6 +79,26 @@ public class JuegoDto   {
     this.nombre = nombre;
   }
 
+  public JuegoDto juegoIdDeReferencia(Long juegoIdDeReferencia) {
+	    this.juegoIdDeReferencia = juegoIdDeReferencia;
+	    return this;
+  }
+
+  /**
+   * El identificador del juego al que se le hace referencia.
+   * @return juegoIdDeReferencia
+   **/
+  @Schema(example = "1234", required = true, description = "El identificador del juego al que se hace referencia.")
+  @NotNull
+
+  	public Long getJuegoIdDeReferencia() {
+	  return juegoIdDeReferencia;
+  	}
+
+  	public void setJuegoIdDeReferencia(Long juegoIdDeReferencia) {
+  		this.juegoIdDeReferencia = juegoIdDeReferencia;
+  	}
+  
   public JuegoDto cantidadDeUsuariosMinima(Integer cantidadDeUsuariosMinima) {
     this.cantidadDeUsuariosMinima = cantidadDeUsuariosMinima;
     return this;
@@ -134,7 +159,7 @@ public class JuegoDto   {
     this.logotipo = logotipo;
   }
 
-  public JuegoDto esperaEntreTurnos(String esperaEntreTurnos) {
+  public JuegoDto esperaEntreTurnos(LocalTime esperaEntreTurnos) {
     this.esperaEntreTurnos = esperaEntreTurnos;
     return this;
   }
@@ -146,11 +171,11 @@ public class JuegoDto   {
   @Schema(example = "0:05:00", required = true, description = "Tiempo de espera para que un jugador pueda jugar.")
       @NotNull
 
-    public String getEsperaEntreTurnos() {
+    public LocalTime getEsperaEntreTurnos() {
     return esperaEntreTurnos;
   }
 
-  public void setEsperaEntreTurnos(String esperaEntreTurnos) {
+  public void setEsperaEntreTurnos(LocalTime esperaEntreTurnos) {
     this.esperaEntreTurnos = esperaEntreTurnos;
   }
 
@@ -166,6 +191,7 @@ public class JuegoDto   {
     JuegoDto juegoDto = (JuegoDto) o;
     return Objects.equals(this.juegoId, juegoDto.juegoId) &&
         Objects.equals(this.nombre, juegoDto.nombre) &&
+        Objects.equals(this.juegoIdDeReferencia, juegoDto.juegoIdDeReferencia) &&
         Objects.equals(this.cantidadDeUsuariosMinima, juegoDto.cantidadDeUsuariosMinima) &&
         Objects.equals(this.cantidadDeUsuariosMaxima, juegoDto.cantidadDeUsuariosMaxima) &&
         Objects.equals(this.logotipo, juegoDto.logotipo) &&
@@ -174,7 +200,7 @@ public class JuegoDto   {
 
   @Override
   public int hashCode() {
-    return Objects.hash(juegoId, nombre, cantidadDeUsuariosMinima, cantidadDeUsuariosMaxima, logotipo, esperaEntreTurnos);
+    return Objects.hash(juegoId, nombre, juegoIdDeReferencia, cantidadDeUsuariosMinima, cantidadDeUsuariosMaxima, logotipo, esperaEntreTurnos);
   }
 
   @Override
@@ -184,6 +210,7 @@ public class JuegoDto   {
     
     sb.append("    juegoId: ").append(toIndentedString(juegoId)).append("\n");
     sb.append("    nombre: ").append(toIndentedString(nombre)).append("\n");
+    sb.append("    juegoIdDeReferencia: ").append(toIndentedString(juegoIdDeReferencia)).append("\n");
     sb.append("    cantidadDeUsuariosMinima: ").append(toIndentedString(cantidadDeUsuariosMinima)).append("\n");
     sb.append("    cantidadDeUsuariosMaxima: ").append(toIndentedString(cantidadDeUsuariosMaxima)).append("\n");
     sb.append("    logotipo: ").append(toIndentedString(logotipo)).append("\n");
@@ -201,5 +228,40 @@ public class JuegoDto   {
       return "null";
     }
     return o.toString().replace("\n", "\n    ");
+  }
+  
+  /**
+   * 
+   * Método que convierte un mapa a juegoDto
+   * @param mapa El mapa a convertir.
+   * @return JuegoDto El dto tipo juego.
+   * 
+   */
+  public JuegoDto mapToDto ( Map<String,Object> mapa ) {
+	  
+	  JuegoDto dto = new JuegoDto () ;
+	  
+	  if ( mapa.containsKey( "nombre" ) ) {
+		  dto.setNombre ( ( String ) mapa.get("nombre") ) ;
+		  mapa.remove( "nombre" ) ;
+	  }
+	  
+	  if ( mapa.containsKey( "juegoIdDeReferencia" ) ) {
+		  if ( mapa.get("juegoIdDeReferencia") instanceof Long ) {
+			  mapa.put( "juegoIdDeReferencia" ,  Long.valueOf(( Long ) mapa.get("juegoIdDeReferencia")));
+		  }
+		  
+		  dto.setJuegoIdDeReferencia( ( Long ) mapa.get("juegoIdDeReferencia"));
+		  mapa.remove ( "juegoIdDeReferencia" ) ;
+	  }
+	  
+	  dto.setJuegoId( ( long ) 0 );
+	  dto.setCantidadDeUsuariosMaxima( 0 );
+	  dto.setCantidadDeUsuariosMinima( 0 );
+	  dto.setLogotipo( null );
+	  dto.setEsperaEntreTurnos( null );
+	  
+	  return dto ;
+	  
   }
 }

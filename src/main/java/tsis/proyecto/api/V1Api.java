@@ -9,7 +9,6 @@ import tsis.proyecto.api.dto.ColaDto;
 import tsis.proyecto.api.dto.ColaIdTurnosBody;
 import tsis.proyecto.api.dto.Error;
 import tsis.proyecto.api.dto.InlineResponse200;
-import tsis.proyecto.api.dto.InlineResponse2001;
 import tsis.proyecto.api.dto.InlineResponse2002;
 import tsis.proyecto.api.dto.InlineResponse2003;
 import tsis.proyecto.api.dto.InlineResponse2004;
@@ -17,6 +16,7 @@ import tsis.proyecto.api.dto.JuegoDto;
 import tsis.proyecto.api.dto.JuegosJuegoIdBody;
 import tsis.proyecto.api.dto.LoginDto;
 import tsis.proyecto.api.dto.PptDto;
+import tsis.proyecto.api.dto.PptsDto;
 import tsis.proyecto.api.dto.PptsJuegoIdBody;
 import tsis.proyecto.api.dto.PreferenciaDto;
 import tsis.proyecto.api.dto.PreferenciasPreferenciasIdBody;
@@ -29,6 +29,7 @@ import tsis.proyecto.api.dto.V1JuegosBody;
 import tsis.proyecto.api.dto.V1PptsBody;
 import tsis.proyecto.api.dto.V1TurnosBody;
 import tsis.proyecto.api.dto.V1UsuariosBody;
+import tsis.proyecto.negocio.modelo.Ppt;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -126,7 +127,7 @@ public interface V1Api {
         produces = { "application/json" }, 
         consumes = { "application/json" }, 
         method = RequestMethod.POST)
-    ResponseEntity<JuegoDto> createJuego(@Parameter(in = ParameterIn.DEFAULT, description = "", schema=@Schema()) @Valid @RequestBody V1JuegosBody body);
+    ResponseEntity<JuegoDto> createJuego(@Parameter(in = ParameterIn.DEFAULT, description = "", schema=@Schema()) @Valid @RequestBody Map<String,Object> body);
 
 
     @Operation(summary = "Permite crear una instancia de ppt.", description = "Crea una instancia del juego.", tags={ "ppts" })
@@ -142,7 +143,7 @@ public interface V1Api {
         produces = { "application/json" }, 
         consumes = { "application/json" }, 
         method = RequestMethod.POST)
-    ResponseEntity<JuegoDto> createPpt(@Parameter(in = ParameterIn.DEFAULT, description = "", schema=@Schema()) @Valid @RequestBody V1PptsBody body);
+    ResponseEntity<Ppt> createPpt(@Parameter(in = ParameterIn.DEFAULT, description = "", schema=@Schema()) @Valid @RequestBody Map <String,Object> body);
 
 
     @Operation(summary = "Permite dar de alta un turno.", description = "Permite dar de alta un turno.", tags={ "turnos" })
@@ -229,7 +230,7 @@ public interface V1Api {
     @RequestMapping(value = "/v1/ppts/{juegoId}",
         produces = { "application/json" }, 
         method = RequestMethod.DELETE)
-    ResponseEntity<Void> deletePpt(@Parameter(in = ParameterIn.PATH, description = "El id del juego.", required=true, schema=@Schema()) @PathVariable("juegoId") Integer juegoId);
+    ResponseEntity<Void> deletePpt(@Parameter(in = ParameterIn.PATH, description = "El id del juego.", required=true, schema=@Schema()) @PathVariable("juegoId") Long juegoId);
 
 
     @Operation(summary = "Permite borrar todas las instancias de ppt.", description = "", tags={ "ppts" })
@@ -383,12 +384,12 @@ public interface V1Api {
     @RequestMapping(value = "/v1/ppts/{juegoId}",
         produces = { "application/json" }, 
         method = RequestMethod.GET)
-    ResponseEntity<PptDto> getPpt(@Parameter(in = ParameterIn.PATH, description = "El id del juego.", required=true, schema=@Schema()) @PathVariable("juegoId") Integer juegoId);
+    ResponseEntity<Ppt> getPpt(@Parameter(in = ParameterIn.PATH, description = "El id del juego.", required=true, schema=@Schema()) @PathVariable("juegoId") Long juegoId);
 
 
     @Operation(summary = "Permite recuperar todas las instancias de \"Piedra, papel o tijeras\".", description = "Regresa un objeto que contiene un arreglo de pptDto del juego.", tags={ "ppts" })
     @ApiResponses(value = { 
-        @ApiResponse(responseCode = "200", description = "Se recuperó exitosamente el juego.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = InlineResponse2001.class))),
+        @ApiResponse(responseCode = "200", description = "Se recuperó exitosamente el juego.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PptsDto.class))),
         
         @ApiResponse(responseCode = "400", description = "Solicitud mal construida.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Error.class))),
         
@@ -400,7 +401,7 @@ public interface V1Api {
     @RequestMapping(value = "/v1/ppts",
         produces = { "application/json" }, 
         method = RequestMethod.GET)
-    ResponseEntity<InlineResponse2001> getPpts();
+    ResponseEntity<PptsDto> getPpts();
 
 
     @Operation(summary = "Obtiene las configuraciones establecidas en el sistema.", description = "Muestra como está establecido el sistema.", tags={ "preferencias" })

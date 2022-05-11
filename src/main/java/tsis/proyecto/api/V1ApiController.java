@@ -4,7 +4,6 @@ import tsis.proyecto.api.dto.ColaDto;
 import tsis.proyecto.api.dto.ColaIdTurnosBody;
 import tsis.proyecto.api.dto.Error;
 import tsis.proyecto.api.dto.InlineResponse200;
-import tsis.proyecto.api.dto.InlineResponse2001;
 import tsis.proyecto.api.dto.InlineResponse2002;
 import tsis.proyecto.api.dto.InlineResponse2003;
 import tsis.proyecto.api.dto.InlineResponse2004;
@@ -12,6 +11,7 @@ import tsis.proyecto.api.dto.JuegoDto;
 import tsis.proyecto.api.dto.JuegosJuegoIdBody;
 import tsis.proyecto.api.dto.LoginDto;
 import tsis.proyecto.api.dto.PptDto;
+import tsis.proyecto.api.dto.PptsDto;
 import tsis.proyecto.api.dto.PptsJuegoIdBody;
 import tsis.proyecto.api.dto.PreferenciaDto;
 import tsis.proyecto.api.dto.PreferenciasPreferenciasIdBody;
@@ -24,8 +24,8 @@ import tsis.proyecto.api.dto.V1JuegosBody;
 import tsis.proyecto.api.dto.V1PptsBody;
 import tsis.proyecto.api.dto.V1TurnosBody;
 import tsis.proyecto.api.dto.V1UsuariosBody;
-import tsis.proyecto.negocio.ServicioUsuario;
-import tsis.proyecto.negocio.modelo.Usuario;
+import tsis.proyecto.negocio.*;
+import tsis.proyecto.negocio.modelo.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
@@ -58,6 +58,7 @@ import javax.validation.constraints.*;
 import javax.validation.Valid;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -67,6 +68,12 @@ import java.util.Map;
 public class V1ApiController implements V1Api {
 
 	// Todas las inyecciones
+	
+	@Autowired
+	ServicioJuego servicioJuego ;
+	
+	@Autowired
+	ServicioPpt servicioPpt ;
 	
 	@Autowired
 	ServicioUsuario servicioUsuario ;
@@ -109,32 +116,55 @@ public class V1ApiController implements V1Api {
         return new ResponseEntity<ColaDto>(HttpStatus.NOT_IMPLEMENTED);
     }
 
-    public ResponseEntity<JuegoDto> createJuego(@Parameter(in = ParameterIn.DEFAULT, description = "", schema=@Schema()) @Valid @RequestBody V1JuegosBody body) {
+    public ResponseEntity<JuegoDto> createJuego(@Parameter(in = ParameterIn.DEFAULT, description = "", schema=@Schema()) @Valid @RequestBody Map<String,Object> body) {
         String accept = request.getHeader("Accept");
         if (accept != null && accept.contains("application/json")) {
-            try {
-                return new ResponseEntity<JuegoDto>(objectMapper.readValue("{\n  \"juegoId\" : 1234,\n  \"logotipo\" : \"https://drive.google.com/drive/folders/1-hiP65nxgpan3OoZXQXdCRPT2i6C2YzX\",\n  \"cantidadDeUsuariosMinima\" : 2,\n  \"nombre\" : \"Juego1\",\n  \"cantidadDeUsuariosMaxima\" : 10,\n  \"esperaEntreTurnos\" : \"0:05:00\"\n}", JuegoDto.class), HttpStatus.NOT_IMPLEMENTED);
-            } catch (IOException e) {
-                log.error("Couldn't serialize response for content type application/json", e);
-                return new ResponseEntity<JuegoDto>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
+            /*try {
+            	
+            	JuegoDto juegoDto = new JuegoDto() ;
+            	
+            	juegoDto = juegoDto.mapToDto(body) ;
+            	
+            	Juego juego = servicioJuego.dtoToJuego(juegoDto) ;
+            	
+            	juego = servicioJuego.createJuego(juego) ;
+            	
+            	juegoDto ;
+            	
+            	return ResponseEntity.status(HttpStatus.CREATED).body(juegoDto) ;
+            }*/
         }
 
         return new ResponseEntity<JuegoDto>(HttpStatus.NOT_IMPLEMENTED);
     }
 
-    public ResponseEntity<JuegoDto> createPpt(@Parameter(in = ParameterIn.DEFAULT, description = "", schema=@Schema()) @Valid @RequestBody V1PptsBody body) {
+    public ResponseEntity<Ppt> createPpt(@Parameter(in = ParameterIn.DEFAULT, description = "", schema=@Schema()) @Valid @RequestBody Map <String,Object> body) {
         String accept = request.getHeader("Accept");
         if (accept != null && accept.contains("application/json")) {
+        	
+        	PptDto dto = new PptDto () ;
+        	
+        	dto = dto.mapToDto(body) ;
+        	
+        	System.out.println ( dto ) ;
+        	
             try {
-                return new ResponseEntity<JuegoDto>(objectMapper.readValue("{\n  \"juegoId\" : 1234,\n  \"logotipo\" : \"https://drive.google.com/drive/folders/1-hiP65nxgpan3OoZXQXdCRPT2i6C2YzX\",\n  \"cantidadDeUsuariosMinima\" : 2,\n  \"nombre\" : \"Juego1\",\n  \"cantidadDeUsuariosMaxima\" : 10,\n  \"esperaEntreTurnos\" : \"0:05:00\"\n}", JuegoDto.class), HttpStatus.NOT_IMPLEMENTED);
-            } catch (IOException e) {
-                log.error("Couldn't serialize response for content type application/json", e);
-                return new ResponseEntity<JuegoDto>(HttpStatus.INTERNAL_SERVER_ERROR);
+            	
+            	Ppt ppt = servicioPpt.createPpt( dto.getUsuarioId1() , dto.getUsuarioId1() ) ;
+            	
+            	if ( ppt != null )
+            		return ResponseEntity.status( HttpStatus.CREATED ).body( ppt ) ;
+            	
+            	else
+            		throw new NullPointerException() ;
+
+            } catch (NullPointerException ex) {
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR , ex.getMessage() );
             }
         }
-
-        return new ResponseEntity<JuegoDto>(HttpStatus.NOT_IMPLEMENTED);
+        
+        else
+        	throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED) ;
     }
 
     public ResponseEntity<TurnoDto> createTurno(@Parameter(in = ParameterIn.DEFAULT, description = "", schema=@Schema()) @Valid @RequestBody V1TurnosBody body) {
@@ -188,14 +218,30 @@ public class V1ApiController implements V1Api {
         return new ResponseEntity<Void>(HttpStatus.NOT_IMPLEMENTED);
     }
 
-    public ResponseEntity<Void> deletePpt(@Parameter(in = ParameterIn.PATH, description = "El id del juego.", required=true, schema=@Schema()) @PathVariable("juegoId") Integer juegoId) {
+    public ResponseEntity<Void> deletePpt(@Parameter(in = ParameterIn.PATH, description = "El id del juego.", required=true, schema=@Schema()) @PathVariable("juegoId") Long juegoId) {
         String accept = request.getHeader("Accept");
-        return new ResponseEntity<Void>(HttpStatus.NOT_IMPLEMENTED);
+        
+        if ( servicioPpt.getPpt( juegoId )  == null )
+        	throw new ResponseStatusException(HttpStatus.NOT_FOUND) ;
+        
+        if ( servicioPpt.deletePpt( juegoId ) )
+        	return new ResponseEntity<Void>(HttpStatus.NO_CONTENT) ;
+        
+        else
+        	throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR) ;        
     }
 
     public ResponseEntity<Void> deletePpts() {
         String accept = request.getHeader("Accept");
-        return new ResponseEntity<Void>(HttpStatus.NOT_IMPLEMENTED);
+        
+        if ( !servicioPpt.getPpts().iterator().hasNext() )
+        	throw new ResponseStatusException(HttpStatus.NOT_FOUND) ;
+        
+        if ( servicioPpt.deletePpts() )
+        	return new ResponseEntity<Void>(HttpStatus.NO_CONTENT) ;
+        
+        else
+        	throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR) ; 
     }
 
     public ResponseEntity<Void> deleteTurno(@Parameter(in = ParameterIn.PATH, description = "El id del turno del usuario.", required=true, schema=@Schema()) @PathVariable("turnoId") Integer turnoId) {
@@ -291,32 +337,44 @@ public class V1ApiController implements V1Api {
         return new ResponseEntity<InlineResponse2002>(HttpStatus.NOT_IMPLEMENTED);
     }
 
-    public ResponseEntity<PptDto> getPpt(@Parameter(in = ParameterIn.PATH, description = "El id del juego.", required=true, schema=@Schema()) @PathVariable("juegoId") Integer juegoId) {
+    public ResponseEntity<Ppt> getPpt(@Parameter(in = ParameterIn.PATH, description = "El id del juego.", required=true, schema=@Schema()) @PathVariable("juegoId") Long juegoId) {
         String accept = request.getHeader("Accept");
         if (accept != null && accept.contains("application/json")) {
-            try {
-                return new ResponseEntity<PptDto>(objectMapper.readValue("{\n  \"usuarioId1\" : 1,\n  \"usuarioId2\" : 2,\n  \"juegoId\" : 1\n}", PptDto.class), HttpStatus.NOT_IMPLEMENTED);
-            } catch (IOException e) {
-                log.error("Couldn't serialize response for content type application/json", e);
-                return new ResponseEntity<PptDto>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
+            Ppt ppt = servicioPpt.getPpt( juegoId ) ;
+            	
+            if ( ppt != null )
+            	return ResponseEntity.status(HttpStatus.OK).body(ppt) ;
+            	
+            else
+            	throw new ResponseStatusException(HttpStatus.NOT_FOUND) ;
         }
-
-        return new ResponseEntity<PptDto>(HttpStatus.NOT_IMPLEMENTED);
+        
+        else
+        	throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED);
     }
 
-    public ResponseEntity<InlineResponse2001> getPpts() {
+    public ResponseEntity<PptsDto> getPpts() {
         String accept = request.getHeader("Accept");
         if (accept != null && accept.contains("application/json")) {
-            try {
-                return new ResponseEntity<InlineResponse2001>(objectMapper.readValue("{\n  \"ppts\" : [ {\n    \"usuarioId1\" : 1,\n    \"usuarioId2\" : 2,\n    \"juegoId\" : 1\n  }, {\n    \"usuarioId1\" : 1,\n    \"usuarioId2\" : 2,\n    \"juegoId\" : 1\n  } ]\n}", InlineResponse2001.class), HttpStatus.NOT_IMPLEMENTED);
-            } catch (IOException e) {
-                log.error("Couldn't serialize response for content type application/json", e);
-                return new ResponseEntity<InlineResponse2001>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
+            
+        	PptsDto dto = new PptsDto () ;
+        	
+        	Iterable <Ppt> lista = servicioPpt.getPpts() ;
+        	
+        	if ( lista.iterator().hasNext() ) {
+        		
+        		for ( Ppt elemento : lista )
+        			dto.addPptsItem(elemento) ;
+        		
+        		return ResponseEntity.status(HttpStatus.OK).body(dto) ;
+        		
+        	}
+        	
+        	else
+        		throw new ResponseStatusException(HttpStatus.NOT_FOUND) ;
         }
 
-        return new ResponseEntity<InlineResponse2001>(HttpStatus.NOT_IMPLEMENTED);
+        return new ResponseEntity<PptsDto>(HttpStatus.NOT_IMPLEMENTED);
     }
 
     public ResponseEntity<PreferenciaDto> getPreferencias() {
@@ -373,15 +431,7 @@ public class V1ApiController implements V1Api {
         		UsuarioDto dto = new UsuarioDto () ;
         	
     			return new ResponseEntity<UsuarioDto>(dto.toDto(usuarioTemporal) , HttpStatus.OK);
-
-/*        		
-        		try {
-        			return new ResponseEntity<UsuarioDto>(dto.toDto(usuarioTemporal) , HttpStatus.OK);
-        		} catch (IOException e) {
-        			log.error("Couldn't serialize response for content type application/json", e);
-        			return new ResponseEntity<UsuarioDto>(HttpStatus.INTERNAL_SERVER_ERROR);
-        		}
-        		*/
+    			
         	}
         }
 

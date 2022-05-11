@@ -7,30 +7,32 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
 import java.util.List;
 import tsis.proyecto.api.dto.PptDto;
+import tsis.proyecto.negocio.modelo.Ppt;
+
 import org.springframework.validation.annotation.Validated;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
 
 /**
- * InlineResponse2001
+ * Ppts
  */
 @Validated
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2022-05-05T21:21:27.284150-05:00[America/Mexico_City]")
 
 
-public class InlineResponse2001   {
+public class PptsDto   {
   @JsonProperty("ppts")
   @Valid
-  private List<PptDto> ppts = null;
+  private List<Ppt> ppts = null;
 
-  public InlineResponse2001 ppts(List<PptDto> ppts) {
+  public PptsDto ppts(List<Ppt> ppts) {
     this.ppts = ppts;
     return this;
   }
 
-  public InlineResponse2001 addPptsItem(PptDto pptsItem) {
+  public PptsDto addPptsItem(Ppt pptsItem) {
     if (this.ppts == null) {
-      this.ppts = new ArrayList<PptDto>();
+      this.ppts = new ArrayList<Ppt>();
     }
     this.ppts.add(pptsItem);
     return this;
@@ -42,11 +44,11 @@ public class InlineResponse2001   {
    **/
   @Schema(description = "")
       @Valid
-    public List<PptDto> getPpts() {
+    public List<Ppt> getPpts() {
     return ppts;
   }
 
-  public void setPpts(List<PptDto> ppts) {
+  public void setPpts(List<Ppt> ppts) {
     this.ppts = ppts;
   }
 
@@ -59,8 +61,8 @@ public class InlineResponse2001   {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    InlineResponse2001 inlineResponse2001 = (InlineResponse2001) o;
-    return Objects.equals(this.ppts, inlineResponse2001.ppts);
+    PptsDto Ppts = (PptsDto) o;
+    return Objects.equals(this.ppts, Ppts.ppts);
   }
 
   @Override
@@ -71,7 +73,7 @@ public class InlineResponse2001   {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class InlineResponse2001 {\n");
+    sb.append("class Ppts {\n");
     
     sb.append("    ppts: ").append(toIndentedString(ppts)).append("\n");
     sb.append("}");
@@ -88,4 +90,5 @@ public class InlineResponse2001   {
     }
     return o.toString().replace("\n", "\n    ");
   }
+  
 }

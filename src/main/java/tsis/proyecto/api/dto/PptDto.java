@@ -1,5 +1,6 @@
 package tsis.proyecto.api.dto;
 
+import java.util.Map;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -17,15 +18,15 @@ import javax.validation.constraints.*;
 
 public class PptDto   {
   @JsonProperty("juegoId")
-  private Integer juegoId = null;
+  private Long juegoId = null;
 
   @JsonProperty("usuarioId1")
-  private Integer usuarioId1 = null;
+  private Long usuarioId1 = null;
 
   @JsonProperty("usuarioId2")
-  private Integer usuarioId2 = null;
+  private Long usuarioId2 = null;
 
-  public PptDto juegoId(Integer juegoId) {
+  public PptDto juegoId(Long juegoId) {
     this.juegoId = juegoId;
     return this;
   }
@@ -37,15 +38,15 @@ public class PptDto   {
   @Schema(example = "1", required = true, description = "El identificador del juego.")
       @NotNull
 
-    public Integer getJuegoId() {
+    public Long getJuegoId() {
     return juegoId;
   }
 
-  public void setJuegoId(Integer juegoId) {
+  public void setJuegoId(Long juegoId) {
     this.juegoId = juegoId;
   }
 
-  public PptDto usuarioId1(Integer usuarioId1) {
+  public PptDto usuarioId1(Long usuarioId1) {
     this.usuarioId1 = usuarioId1;
     return this;
   }
@@ -57,15 +58,15 @@ public class PptDto   {
   @Schema(example = "1", required = true, description = "El identificador del usuario1.")
       @NotNull
 
-    public Integer getUsuarioId1() {
+    public Long getUsuarioId1() {
     return usuarioId1;
   }
 
-  public void setUsuarioId1(Integer usuarioId1) {
+  public void setUsuarioId1(Long usuarioId1) {
     this.usuarioId1 = usuarioId1;
   }
 
-  public PptDto usuarioId2(Integer usuarioId2) {
+  public PptDto usuarioId2(Long usuarioId2) {
     this.usuarioId2 = usuarioId2;
     return this;
   }
@@ -77,11 +78,11 @@ public class PptDto   {
   @Schema(example = "2", required = true, description = "El identificador del usuario2.")
       @NotNull
 
-    public Integer getUsuarioId2() {
+    public Long getUsuarioId2() {
     return usuarioId2;
   }
 
-  public void setUsuarioId2(Integer usuarioId2) {
+  public void setUsuarioId2(Long usuarioId2) {
     this.usuarioId2 = usuarioId2;
   }
 
@@ -126,5 +127,41 @@ public class PptDto   {
       return "null";
     }
     return o.toString().replace("\n", "\n    ");
+  }
+  
+  /**
+   * 
+   * Convierte un Map a dto.
+   * 
+   * @param mapa Map a convertir.
+   * 
+   * @return PptDto Dto convertido.
+   */
+  public PptDto mapToDto ( Map<String,Object> mapa ) {
+	  
+	  PptDto dto = new PptDto () ;
+	  
+	  dto.setJuegoId( ( long ) 0 );
+	  
+	  if ( mapa.containsKey("usuarioId1") ) {
+		  if ( mapa.get( "usuarioId1" ) instanceof Integer ) {
+			  mapa.put( "usuarioId1" , Long.valueOf( ( Integer ) mapa.get("usuarioId1") ) ) ;
+		  }
+		  
+		  dto.setUsuarioId1( ( Long ) mapa.get("usuarioId1") );
+		  mapa.remove ( "usuarioId1" ) ;
+	  }
+	  
+	  if ( mapa.containsKey("usuarioId2") ) {
+		  if ( mapa.get( "usuarioId2" ) instanceof Integer ) {
+			  mapa.put( "usuarioId2" , Long.valueOf( ( Integer ) mapa.get("usuarioId2") ) ) ;
+		  }
+		  
+		  dto.setUsuarioId2( ( Long ) mapa.get("usuarioId2") );
+		  mapa.remove ( "usuarioId2" ) ;
+	  }
+	  
+	  return dto ;
+	  
   }
 }

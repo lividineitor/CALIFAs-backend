@@ -5,6 +5,8 @@ import tsis.proyecto.configuration.LocalDateTimeConverter;
 import tsis.proyecto.datos.UsuarioRepository;
 import tsis.proyecto.negocio.modelo.Usuario;
 
+import java.util.LinkedList;
+
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,6 +63,7 @@ public class Swagger2SpringBoot implements CommandLineRunner {
 		prueba2.setPassword("ale");
 		
 		this.usuarioRepository.save(prueba2) ;
+		
 		
     }
 
