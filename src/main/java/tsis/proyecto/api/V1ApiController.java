@@ -138,22 +138,23 @@ public class V1ApiController implements V1Api {
         return new ResponseEntity<JuegoDto>(HttpStatus.NOT_IMPLEMENTED);
     }
 
-    public ResponseEntity<Ppt> createPpt(@Parameter(in = ParameterIn.DEFAULT, description = "", schema=@Schema()) @Valid @RequestBody Map <String,Object> body) {
+    public ResponseEntity<PptDto> createPpt(@Parameter(in = ParameterIn.DEFAULT, description = "", schema=@Schema()) @Valid @RequestBody Map <String,Object> body) {
         String accept = request.getHeader("Accept");
         if (accept != null && accept.contains("application/json")) {
         	
         	PptDto dto = new PptDto () ;
         	
         	dto = dto.mapToDto(body) ;
-        	
-        	System.out.println ( dto ) ;
-        	
+        	        	
             try {
             	
             	Ppt ppt = servicioPpt.createPpt( dto.getUsuarioId1() , dto.getUsuarioId1() ) ;
             	
-            	if ( ppt != null )
-            		return ResponseEntity.status( HttpStatus.CREATED ).body( ppt ) ;
+            	if ( ppt != null ) {
+            		dto = dto.pptToDto(ppt) ;
+            		return ResponseEntity.status( HttpStatus.CREATED ).body( dto ) ;
+            		
+            	}
             	
             	else
             		throw new NullPointerException() ;
@@ -218,13 +219,13 @@ public class V1ApiController implements V1Api {
         return new ResponseEntity<Void>(HttpStatus.NOT_IMPLEMENTED);
     }
 
-    public ResponseEntity<Void> deletePpt(@Parameter(in = ParameterIn.PATH, description = "El id del juego.", required=true, schema=@Schema()) @PathVariable("juegoId") Long juegoId) {
+    public ResponseEntity<Void> deletePpt(@Parameter(in = ParameterIn.PATH, description = "El id del juego.", required=true, schema=@Schema()) @PathVariable("pptId") Long pptId) {
         String accept = request.getHeader("Accept");
         
-        if ( servicioPpt.getPpt( juegoId )  == null )
+        if ( servicioPpt.getPpt( pptId )  == null )
         	throw new ResponseStatusException(HttpStatus.NOT_FOUND) ;
         
-        if ( servicioPpt.deletePpt( juegoId ) )
+        if ( servicioPpt.deletePpt( pptId ) )
         	return new ResponseEntity<Void>(HttpStatus.NO_CONTENT) ;
         
         else
@@ -337,14 +338,17 @@ public class V1ApiController implements V1Api {
         return new ResponseEntity<InlineResponse2002>(HttpStatus.NOT_IMPLEMENTED);
     }
 
-    public ResponseEntity<Ppt> getPpt(@Parameter(in = ParameterIn.PATH, description = "El id del juego.", required=true, schema=@Schema()) @PathVariable("juegoId") Long juegoId) {
+    public ResponseEntity<PptDto> getPpt(@Parameter(in = ParameterIn.PATH, description = "El id del juego.", required=true, schema=@Schema()) @PathVariable("pptId") Long pptId) {
         String accept = request.getHeader("Accept");
         if (accept != null && accept.contains("application/json")) {
-            Ppt ppt = servicioPpt.getPpt( juegoId ) ;
+            Ppt ppt = servicioPpt.getPpt( pptId ) ;
             	
-            if ( ppt != null )
-            	return ResponseEntity.status(HttpStatus.OK).body(ppt) ;
-            	
+            if ( ppt != null ) {
+            	PptDto dto = new PptDto () ;
+            	dto = dto.pptToDto(ppt);
+            	return ResponseEntity.status(HttpStatus.OK).body(dto) ;
+            }
+            
             else
             	throw new ResponseStatusException(HttpStatus.NOT_FOUND) ;
         }

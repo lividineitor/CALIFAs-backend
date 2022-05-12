@@ -71,7 +71,7 @@ public interface V1Api {
         @ApiResponse(responseCode = "500", description = "Error interno durante la consulta.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Error.class))),
         
         @ApiResponse(responseCode = "501", description = "Operación no implementada.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Error.class))) })
-    @RequestMapping(value = "/v1/ppts/{juegoId}",
+    @RequestMapping(value = "/v1/ppts/{pptId}",
         produces = { "application/json" }, 
         consumes = { "application/json" }, 
         method = RequestMethod.POST)
@@ -132,7 +132,7 @@ public interface V1Api {
 
     @Operation(summary = "Permite crear una instancia de ppt.", description = "Crea una instancia del juego.", tags={ "ppts" })
     @ApiResponses(value = { 
-        @ApiResponse(responseCode = "201", description = "Creación exitosa del juego.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = JuegoDto.class))),
+        @ApiResponse(responseCode = "201", description = "Creación exitosa del juego.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PptDto.class))),
         
         @ApiResponse(responseCode = "400", description = "Solicitud mal construida.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Error.class))),
         
@@ -143,7 +143,7 @@ public interface V1Api {
         produces = { "application/json" }, 
         consumes = { "application/json" }, 
         method = RequestMethod.POST)
-    ResponseEntity<Ppt> createPpt(@Parameter(in = ParameterIn.DEFAULT, description = "", schema=@Schema()) @Valid @RequestBody Map <String,Object> body);
+    ResponseEntity<PptDto> createPpt(@Parameter(in = ParameterIn.DEFAULT, description = "", schema=@Schema()) @Valid @RequestBody Map <String,Object> body);
 
 
     @Operation(summary = "Permite dar de alta un turno.", description = "Permite dar de alta un turno.", tags={ "turnos" })
@@ -227,10 +227,10 @@ public interface V1Api {
         @ApiResponse(responseCode = "500", description = "Error interno durante la consulta.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Error.class))),
         
         @ApiResponse(responseCode = "501", description = "Operación no implementada.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Error.class))) })
-    @RequestMapping(value = "/v1/ppts/{juegoId}",
+    @RequestMapping(value = "/v1/ppts/{pptId}",
         produces = { "application/json" }, 
         method = RequestMethod.DELETE)
-    ResponseEntity<Void> deletePpt(@Parameter(in = ParameterIn.PATH, description = "El id del juego.", required=true, schema=@Schema()) @PathVariable("juegoId") Long juegoId);
+    ResponseEntity<Void> deletePpt(@Parameter(in = ParameterIn.PATH, description = "El id del juego.", required=true, schema=@Schema()) @PathVariable("pptId") Long pptId);
 
 
     @Operation(summary = "Permite borrar todas las instancias de ppt.", description = "", tags={ "ppts" })
@@ -381,10 +381,10 @@ public interface V1Api {
         @ApiResponse(responseCode = "500", description = "Error interno durante la consulta.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Error.class))),
         
         @ApiResponse(responseCode = "501", description = "Operación no implementada.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Error.class))) })
-    @RequestMapping(value = "/v1/ppts/{juegoId}",
+    @RequestMapping(value = "/v1/ppts/{pptId}",
         produces = { "application/json" }, 
         method = RequestMethod.GET)
-    ResponseEntity<Ppt> getPpt(@Parameter(in = ParameterIn.PATH, description = "El id del juego.", required=true, schema=@Schema()) @PathVariable("juegoId") Long juegoId);
+    ResponseEntity<PptDto> getPpt(@Parameter(in = ParameterIn.PATH, description = "El id del juego.", required=true, schema=@Schema()) @PathVariable("pptId") Long pptId);
 
 
     @Operation(summary = "Permite recuperar todas las instancias de \"Piedra, papel o tijeras\".", description = "Regresa un objeto que contiene un arreglo de pptDto del juego.", tags={ "ppts" })

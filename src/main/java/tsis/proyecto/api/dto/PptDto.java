@@ -5,6 +5,8 @@ import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import io.swagger.v3.oas.annotations.media.Schema;
+import tsis.proyecto.negocio.modelo.Ppt;
+
 import org.springframework.validation.annotation.Validated;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
@@ -17,35 +19,136 @@ import javax.validation.constraints.*;
 
 
 public class PptDto   {
-  @JsonProperty("juegoId")
-  private Long juegoId = null;
+  @JsonProperty("pptId")
+  private Long pptId = null;
+  
+  @JsonProperty("nombre")
+  private String nombre = null;
 
+  @JsonProperty("cantidadDeUsuariosMinima")
+  private int cantidadDeUsuariosMinima = 0;
+  
+  @JsonProperty("cantidadDeUsuariosMaxima")
+  private int cantidadDeUsuariosMaxima = 0;
+  
+  @JsonProperty("logotipo")
+  private String logotipo = null;
+  
   @JsonProperty("usuarioId1")
   private Long usuarioId1 = null;
-
+  
+  @JsonProperty("eleccion1")
+  private String eleccion1 = null;
+  
   @JsonProperty("usuarioId2")
   private Long usuarioId2 = null;
-
-  public PptDto juegoId(Long juegoId) {
-    this.juegoId = juegoId;
+  
+  @JsonProperty("eleccion2")
+  private String eleccion2 = null;
+  
+  @JsonProperty("ganador")
+  private Long ganador = null;
+  
+  public PptDto pptId(Long pptId) {
+    this.pptId = pptId;
     return this;
   }
 
   /**
    * El identificador del juego.
-   * @return juegoId
+   * @return pptId
    **/
   @Schema(example = "1", required = true, description = "El identificador del juego.")
       @NotNull
 
-    public Long getJuegoId() {
-    return juegoId;
+  public Long getPptId() {
+    return pptId;
   }
 
-  public void setJuegoId(Long juegoId) {
-    this.juegoId = juegoId;
+  public void setPptId(Long pptId) {
+    this.pptId = pptId;
   }
 
+  public PptDto nombre(String nombre) {
+	this.nombre = nombre;
+	return this;
+  }
+
+  /**
+  * El nombre del juego.
+  * @return nombre
+  **/
+  @Schema(example = "Piedra, papel o tijeras", required = true, description = "El nombre del juego.")
+  @NotNull
+
+  public String getNombre() {
+  return nombre;
+  }
+
+  public void setNombre(String nombre) {
+    this.nombre = nombre;
+  }
+  
+  public PptDto cantidadDeUsuariosMinima(int cantidadDeUsuariosMinima) {
+	    this.cantidadDeUsuariosMinima = cantidadDeUsuariosMinima;
+	    return this;
+	  }
+
+	  /**
+	   * Cantidad mínima de usuarios.
+	   * @return cantidadDeUsuariosMinima
+	   **/
+	  @Schema(example = "1", required = true, description = "Cantidad de usuarios mínima.")
+	      @NotNull
+
+	  public int getCantidadDeUsuariosMinima() {
+	    return cantidadDeUsuariosMinima;
+	  }
+
+	  public void setCantidadDeUsuariosMinima(int cantidadDeUsuariosMinima) {
+	    this.cantidadDeUsuariosMinima = cantidadDeUsuariosMinima;
+	  }
+
+	  public PptDto cantidadDeUsuariosMaxima(int cantidadDeUsuariosMaxima) {
+		    this.cantidadDeUsuariosMaxima = cantidadDeUsuariosMaxima;
+		    return this;
+		  }
+
+		  /**
+		   * Cantidad de usuarios máxima.
+		   * @return cantidadDeUsuariosMaxima
+		   **/
+		  @Schema(example = "2", required = true, description = "Cantidad de usuarios máxima.")
+		      @NotNull
+
+		  public int getCantidadDeUsuariosMaxima() {
+		    return cantidadDeUsuariosMaxima;
+		  }
+
+		  public void setCantidadDeUsuariosMaxima(int cantidadDeUsuariosMaxima) {
+		    this.cantidadDeUsuariosMaxima = cantidadDeUsuariosMaxima;
+		  }
+	  
+  public PptDto logotipo(String logotipo) {
+    this.logotipo = logotipo;
+    return this;
+  }
+
+  /**
+  * El logotipo del juego.
+  * @return logotipo
+  **/
+  @Schema(example = "../logotipo.png", required = true, description = "El logotipo del juego.")
+  @NotNull
+
+  public String getLogotipo() {
+	  return logotipo;
+  }
+
+  public void setLogotipo(String logotipo) {
+    this.logotipo = logotipo;
+  }
+	  
   public PptDto usuarioId1(Long usuarioId1) {
     this.usuarioId1 = usuarioId1;
     return this;
@@ -66,6 +169,26 @@ public class PptDto   {
     this.usuarioId1 = usuarioId1;
   }
 
+  public PptDto eleccion1(String eleccion1) {
+	  this.eleccion1 = eleccion1;
+	  return this;
+  }
+
+  /**
+  * La selección del usuario 1.
+  * @return eleccion1
+  **/
+  @Schema(example = "piedra", required = true, description = "La elección del jugador 1.")
+  @NotNull
+
+  public String getEleccion1() {
+	  return eleccion1;
+  }
+
+  public void setEleccion1(String eleccion1) {
+    this.eleccion1 = eleccion1;
+  }
+  
   public PptDto usuarioId2(Long usuarioId2) {
     this.usuarioId2 = usuarioId2;
     return this;
@@ -86,6 +209,46 @@ public class PptDto   {
     this.usuarioId2 = usuarioId2;
   }
 
+  public PptDto eleccion2(String eleccion2) {
+	  this.eleccion2 = eleccion2;
+	  return this;
+  }
+
+  /**
+  * La selección del usuario 2.
+  * @return eleccion2
+  **/
+  @Schema(example = "piedra", required = true, description = "La elección del jugador 2.")
+  @NotNull
+
+  public String getEleccion2() {
+	  return eleccion2;
+  }
+
+  public void setEleccion2(String eleccion2) {
+    this.eleccion2 = eleccion2;
+  }
+  
+  public PptDto ganador (Long ganador) {
+	    this.ganador = ganador;
+	    return this;
+	  }
+
+	  /**
+	   * El identificador del usuario que ganó.
+	   * @return ganador
+	   **/
+	  @Schema(example = "2", required = true, description = "El identificador del usuario quw ganó.")
+	      @NotNull
+
+	    public Long getGanador() {
+	    return ganador;
+	  }
+
+	  public void setGanador(Long ganador) {
+	    this.ganador = ganador;
+	  }
+  
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -96,14 +259,21 @@ public class PptDto   {
       return false;
     }
     PptDto pptDto = (PptDto) o;
-    return Objects.equals(this.juegoId, pptDto.juegoId) &&
+    return Objects.equals(this.pptId, pptDto.pptId) &&
+            Objects.equals(this.nombre, pptDto.nombre) &&
+            Objects.equals(this.cantidadDeUsuariosMinima, pptDto.cantidadDeUsuariosMinima) &&
+            Objects.equals(this.cantidadDeUsuariosMaxima, pptDto.cantidadDeUsuariosMaxima) &&
+            Objects.equals(this.logotipo, pptDto.logotipo) &&
         Objects.equals(this.usuarioId1, pptDto.usuarioId1) &&
-        Objects.equals(this.usuarioId2, pptDto.usuarioId2);
+        Objects.equals(this.eleccion1, pptDto.eleccion1) &&
+        Objects.equals(this.usuarioId2, pptDto.usuarioId2) &&
+        Objects.equals(this.eleccion2, pptDto.eleccion2) &&
+        Objects.equals(this.ganador, pptDto.ganador) ;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(juegoId, usuarioId1, usuarioId2);
+    return Objects.hash(pptId, nombre, cantidadDeUsuariosMinima, cantidadDeUsuariosMaxima, logotipo, usuarioId1, eleccion1, usuarioId2, eleccion2,ganador);
   }
 
   @Override
@@ -111,9 +281,16 @@ public class PptDto   {
     StringBuilder sb = new StringBuilder();
     sb.append("class PptDto {\n");
     
-    sb.append("    juegoId: ").append(toIndentedString(juegoId)).append("\n");
+    sb.append("    pptId: ").append(toIndentedString(pptId)).append("\n");
+    sb.append("    nombre: ").append(toIndentedString(nombre)).append("\n");
+    sb.append("    cantidadDeUsuariosMinima: ").append(toIndentedString(cantidadDeUsuariosMinima)).append("\n");
+    sb.append("    cantidadDeUsuariosMaxima: ").append(toIndentedString(cantidadDeUsuariosMaxima)).append("\n");
+    sb.append("    logotipo: ").append(toIndentedString(logotipo)).append("\n");
     sb.append("    usuarioId1: ").append(toIndentedString(usuarioId1)).append("\n");
+    sb.append("    eleccion1: ").append(toIndentedString(eleccion1)).append("\n");
     sb.append("    usuarioId2: ").append(toIndentedString(usuarioId2)).append("\n");
+    sb.append("    eleccion2: ").append(toIndentedString(eleccion2)).append("\n");
+    sb.append("    ganador: ").append(toIndentedString(ganador)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -141,7 +318,7 @@ public class PptDto   {
 	  
 	  PptDto dto = new PptDto () ;
 	  
-	  dto.setJuegoId( ( long ) 0 );
+	  dto.setPptId( ( long ) 0 );
 	  
 	  if ( mapa.containsKey("usuarioId1") ) {
 		  if ( mapa.get( "usuarioId1" ) instanceof Integer ) {
@@ -164,4 +341,33 @@ public class PptDto   {
 	  return dto ;
 	  
   }
+  
+  /**
+   * 
+   * Convierte Ppt a PptDto
+   * 
+   * @param ppt Ppt a convertir.
+   * 
+   * @return PptDto Dto resultante.
+   * 
+   */
+  
+  public PptDto pptToDto ( Ppt ppt ) {
+	  
+	  PptDto dto = new PptDto () ;
+	  
+	  dto.setPptId( ppt.getPptId() );
+	  dto.setNombre( ppt.getNombre());
+	  dto.setCantidadDeUsuariosMinima( ppt.getCantidadDeUsuariosMinima());
+	  dto.setCantidadDeUsuariosMaxima(ppt.getCantidadDeUsuariosMaxima());
+	  dto.setLogotipo(ppt.getLogotipo());
+	  dto.setUsuarioId1(ppt.getUsuarioId1());
+	  dto.setEleccion1(ppt.getEleccion1());
+	  dto.setUsuarioId2(ppt.getUsuarioId2());
+	  dto.setGanador(ppt.getGanador());
+	  
+	  return dto ;
+	  
+  }
+  
 }
