@@ -6,6 +6,8 @@ import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import io.swagger.v3.oas.annotations.media.Schema;
+import tsis.proyecto.negocio.modelo.Juego;
+
 import org.springframework.validation.annotation.Validated;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
@@ -264,4 +266,29 @@ public class JuegoDto   {
 	  return dto ;
 	  
   }
+  
+  /**
+   * 
+   * Convierte de Juego a JuegoDto
+   * 
+   * @param juego El juego a convertir
+   * 
+   * @return JuegoDto El dto creado.
+   * 
+   */
+  public JuegoDto toDto ( Juego juego ) {
+  
+  	JuegoDto dto = new JuegoDto () ;
+  
+  	dto.setJuegoId( juego.getJuegoId() ) ;
+  	dto.setNombre( juego.getNombre() ) ;
+	dto.setJuegoIdDeReferencia( juego.getJuegoIdDeReferencia() ) ;
+	dto.setCantidadDeUsuariosMinima ( juego.getCantidadDeUsuariosMinima() ) ;
+	dto.setCantidadDeUsuariosMaxima( juego.getCantidadDeUsuariosMaxima());
+	dto.setLogotipo( juego.getLogotipo() ) ;
+	dto.setEsperaEntreTurnos( juego.getEsperaEntreTurnos() ) ;
+	
+  	return dto ;
+  }
+  
 }

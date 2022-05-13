@@ -9,7 +9,7 @@ import tsis.proyecto.api.dto.ColaDto;
 import tsis.proyecto.api.dto.ColaIdTurnosBody;
 import tsis.proyecto.api.dto.Error;
 import tsis.proyecto.api.dto.InlineResponse200;
-import tsis.proyecto.api.dto.InlineResponse2002;
+import tsis.proyecto.api.dto.JuegosDto;
 import tsis.proyecto.api.dto.InlineResponse2003;
 import tsis.proyecto.api.dto.InlineResponse2004;
 import tsis.proyecto.api.dto.JuegoDto;
@@ -318,6 +318,21 @@ public interface V1Api {
         method = RequestMethod.POST)
     ResponseEntity<TokenDto> existUsuario(@Parameter(in = ParameterIn.DEFAULT, description = "", schema=@Schema()) @Valid @RequestBody LoginDto body);
 
+    @Operation(summary = "Permite recuperar todos los juegos del sistema.", description = "Regresa un arreglo que contiene todos los juegos del sistema.", tags={ "juegos" })
+    @ApiResponses(value = { 
+        @ApiResponse(responseCode = "200", description = "Se recuperó exitosamente el catálogo de juegos.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = JuegosDto.class))),
+        
+        @ApiResponse(responseCode = "400", description = "Solicitud mal construida.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Error.class))),
+        
+        @ApiResponse(responseCode = "404", description = "El recurso no existe.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Error.class))),
+        
+        @ApiResponse(responseCode = "500", description = "Error interno durante la consulta.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Error.class))),
+        
+        @ApiResponse(responseCode = "501", description = "No implementado.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Error.class))) })
+    @RequestMapping(value = "/v1/juegos/catalogo",
+        produces = { "application/json" }, 
+        method = RequestMethod.GET)
+    ResponseEntity<JuegosDto> getCatalogo();
 
     @Operation(summary = "Recupera todas las colas del sistema.", description = "Regresa un arreglo de objetos colaDto que contiene el catálogo de colas del sistema.", tags={ "colas" })
     @ApiResponses(value = { 
@@ -353,7 +368,7 @@ public interface V1Api {
 
     @Operation(summary = "Permite recuperar todos los juegos del sistema.", description = "Regresa un arreglo que contiene todos los juegos del sistema.", tags={ "juegos" })
     @ApiResponses(value = { 
-        @ApiResponse(responseCode = "200", description = "Se recuperó exitosamente el catálogo de juegos.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = InlineResponse2002.class))),
+        @ApiResponse(responseCode = "200", description = "Se recuperó exitosamente el catálogo de juegos.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = JuegosDto.class))),
         
         @ApiResponse(responseCode = "400", description = "Solicitud mal construida.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Error.class))),
         
@@ -365,7 +380,7 @@ public interface V1Api {
     @RequestMapping(value = "/v1/juegos",
         produces = { "application/json" }, 
         method = RequestMethod.GET)
-    ResponseEntity<InlineResponse2002> getJuegos();
+    ResponseEntity<JuegosDto> getJuegos();
 
 
     @Operation(summary = "Permite recuperar una instancia \"Piedra, papel o tijeras\" a partir de su id.", description = "Regresa un objeto que contiene un pptDto del juego.", tags={ "ppts" })

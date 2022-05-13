@@ -4,7 +4,7 @@ import tsis.proyecto.api.dto.ColaDto;
 import tsis.proyecto.api.dto.ColaIdTurnosBody;
 import tsis.proyecto.api.dto.Error;
 import tsis.proyecto.api.dto.InlineResponse200;
-import tsis.proyecto.api.dto.InlineResponse2002;
+import tsis.proyecto.api.dto.JuegosDto;
 import tsis.proyecto.api.dto.InlineResponse2003;
 import tsis.proyecto.api.dto.InlineResponse2004;
 import tsis.proyecto.api.dto.JuegoDto;
@@ -324,6 +324,17 @@ public class V1ApiController implements V1Api {
         
     }
 
+    public ResponseEntity<JuegosDto> getCatalogo () {
+        String accept = request.getHeader("Accept");
+        if (accept != null && accept.contains("application/json")) {
+            JuegosDto catalogo = servicioJuego.getCatalogo() ;
+            
+            return ResponseEntity.status(HttpStatus.OK).body( catalogo ) ;
+        }
+
+        return new ResponseEntity<JuegosDto>(HttpStatus.NOT_IMPLEMENTED);
+    }
+    
     public ResponseEntity<InlineResponse2003> getColas() {
         String accept = request.getHeader("Accept");
         if (accept != null && accept.contains("application/json")) {
@@ -352,18 +363,18 @@ public class V1ApiController implements V1Api {
         return new ResponseEntity<JuegoDto>(HttpStatus.NOT_IMPLEMENTED);
     }
 
-    public ResponseEntity<InlineResponse2002> getJuegos() {
+    public ResponseEntity<JuegosDto> getJuegos() {
         String accept = request.getHeader("Accept");
         if (accept != null && accept.contains("application/json")) {
             try {
-                return new ResponseEntity<InlineResponse2002>(objectMapper.readValue("{\n  \"juegos\" : [ {\n    \"juegoId\" : 1234,\n    \"logotipo\" : \"https://drive.google.com/drive/folders/1-hiP65nxgpan3OoZXQXdCRPT2i6C2YzX\",\n    \"cantidadDeUsuariosMinima\" : 2,\n    \"nombre\" : \"Juego1\",\n    \"cantidadDeUsuariosMaxima\" : 10,\n    \"esperaEntreTurnos\" : \"0:05:00\"\n  }, {\n    \"juegoId\" : 1234,\n    \"logotipo\" : \"https://drive.google.com/drive/folders/1-hiP65nxgpan3OoZXQXdCRPT2i6C2YzX\",\n    \"cantidadDeUsuariosMinima\" : 2,\n    \"nombre\" : \"Juego1\",\n    \"cantidadDeUsuariosMaxima\" : 10,\n    \"esperaEntreTurnos\" : \"0:05:00\"\n  } ]\n}", InlineResponse2002.class), HttpStatus.NOT_IMPLEMENTED);
+                return new ResponseEntity<JuegosDto>(objectMapper.readValue("{\n  \"juegos\" : [ {\n    \"juegoId\" : 1234,\n    \"logotipo\" : \"https://drive.google.com/drive/folders/1-hiP65nxgpan3OoZXQXdCRPT2i6C2YzX\",\n    \"cantidadDeUsuariosMinima\" : 2,\n    \"nombre\" : \"Juego1\",\n    \"cantidadDeUsuariosMaxima\" : 10,\n    \"esperaEntreTurnos\" : \"0:05:00\"\n  }, {\n    \"juegoId\" : 1234,\n    \"logotipo\" : \"https://drive.google.com/drive/folders/1-hiP65nxgpan3OoZXQXdCRPT2i6C2YzX\",\n    \"cantidadDeUsuariosMinima\" : 2,\n    \"nombre\" : \"Juego1\",\n    \"cantidadDeUsuariosMaxima\" : 10,\n    \"esperaEntreTurnos\" : \"0:05:00\"\n  } ]\n}", JuegosDto.class), HttpStatus.NOT_IMPLEMENTED);
             } catch (IOException e) {
                 log.error("Couldn't serialize response for content type application/json", e);
-                return new ResponseEntity<InlineResponse2002>(HttpStatus.INTERNAL_SERVER_ERROR);
+                return new ResponseEntity<JuegosDto>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
 
-        return new ResponseEntity<InlineResponse2002>(HttpStatus.NOT_IMPLEMENTED);
+        return new ResponseEntity<JuegosDto>(HttpStatus.NOT_IMPLEMENTED);
     }
 
     public ResponseEntity<PptDto> getPpt(@Parameter(in = ParameterIn.PATH, description = "El id del juego.", required=true, schema=@Schema()) @PathVariable("pptId") Long pptId) {

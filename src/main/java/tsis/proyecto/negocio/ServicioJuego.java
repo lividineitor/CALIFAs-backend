@@ -1,9 +1,13 @@
 package tsis.proyecto.negocio;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import tsis.proyecto.api.dto.JuegoDto;
+import tsis.proyecto.api.dto.JuegosDto;
 import tsis.proyecto.datos.JuegoRepository;
 import tsis.proyecto.negocio.modelo.Juego;
 import tsis.proyecto.negocio.modelo.Ppt;
@@ -26,6 +30,8 @@ public class ServicioJuego {
 	@Autowired
 	ServicioPpt servicioPpt ;
 
+	LocalTime esperaEntreTurnos ;
+	
 	// Métodos públicos
 	
 	/**
@@ -42,6 +48,46 @@ public class ServicioJuego {
 		//juegoARetornar = getJuego ( juego.getNombre() ) ;
 		
 	}*/
+	
+	/**
+	 * 
+	 * Regresa la lista de juegos creados en el sistema
+	 * 
+	 * @return
+	 */
+	//public JuegosDto getJuegos () {}
+
+	/**
+	 * 
+	 * Regresa el catálogo de juegos
+	 * 
+	 * @return JuegosDto Contiene el catálogo de juegos.
+	 * 
+	 */
+	
+	public JuegosDto getCatalogo () {
+		
+		JuegoDto dto = new JuegoDto () ;
+		
+		JuegosDto juegos = new JuegosDto () ;
+		
+		Juego juegoPpt = new Juego () ;
+		
+		// El juego "Piedra, papel o tijeras"
+		
+		juegoPpt.setCantidadDeUsuariosMaxima( servicioPpt.getCantidadDeUsuariosMaxima());
+		juegoPpt.setCantidadDeUsuariosMinima(servicioPpt.getCantidadDeUsuariosMinima());
+		juegoPpt.setNombre(servicioPpt.getNombreDelJuego());
+		juegoPpt.setLogotipo(servicioPpt.getLogotipo());
+		juegoPpt.setEsperaEntreTurnos(this.esperaEntreTurnos);
+		
+		dto = dto.toDto( juegoPpt ) ;
+		
+		juegos.addJuegosItem( dto ) ;
+		
+		return juegos ;
+		
+	}
 	
 	/**
 	 * 
@@ -89,5 +135,8 @@ public class ServicioJuego {
 		return juego ;
 		
 	}
+	
+	
+	
 	
 }

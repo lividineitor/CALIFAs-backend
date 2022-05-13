@@ -212,6 +212,37 @@ public class ServicioPpt {
 	}
 	
 	/**
+	 * Regresa la cantidad de usuarios máxima
+	 * 
+	 * @return int Cantidad de usuarios
+	 * 
+	 */
+	public int getCantidadDeUsuariosMaxima () {
+		return this.cantidadDeUsuariosMaxima ;
+	}
+	
+	/**
+	 * Regresa la cantidad de usuarios mínima
+	 * 
+	 * @return int Cantidad de usuarios
+	 * 
+	 */
+	public int getCantidadDeUsuariosMinima () {
+		return this.cantidadDeUsuariosMinima ;
+	}
+	
+	/**
+	 * 
+	 * Regresa la ruta del logotipo del juego.
+	 * 
+	 * @return String Ruta del logotipo del juego.
+	 * 
+	 */
+	public String getLogotipo () {
+		return this.logotipo ;
+	}
+	
+	/**
 	 * 
 	 * Regresa el nombre del juego para comparaciones externas.
 	 * 

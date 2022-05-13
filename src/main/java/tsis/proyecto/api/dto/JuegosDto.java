@@ -18,17 +18,17 @@ import javax.validation.constraints.*;
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2022-05-05T21:21:27.284150-05:00[America/Mexico_City]")
 
 
-public class InlineResponse2002   {
+public class JuegosDto   {
   @JsonProperty("juegos")
   @Valid
   private List<JuegoDto> juegos = null;
 
-  public InlineResponse2002 juegos(List<JuegoDto> juegos) {
+  public JuegosDto juegos(List<JuegoDto> juegos) {
     this.juegos = juegos;
     return this;
   }
 
-  public InlineResponse2002 addJuegosItem(JuegoDto juegosItem) {
+  public JuegosDto addJuegosItem(JuegoDto juegosItem) {
     if (this.juegos == null) {
       this.juegos = new ArrayList<JuegoDto>();
     }
@@ -59,7 +59,7 @@ public class InlineResponse2002   {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    InlineResponse2002 inlineResponse2002 = (InlineResponse2002) o;
+    JuegosDto inlineResponse2002 = (JuegosDto) o;
     return Objects.equals(this.juegos, inlineResponse2002.juegos);
   }
 
