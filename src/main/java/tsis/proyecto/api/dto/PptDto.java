@@ -364,6 +364,7 @@ public class PptDto   {
 	  dto.setUsuarioId1(ppt.getUsuarioId1());
 	  dto.setEleccion1(ppt.getEleccion1());
 	  dto.setUsuarioId2(ppt.getUsuarioId2());
+	  dto.setEleccion2(ppt.getEleccion2());
 	  dto.setGanador(ppt.getGanador());
 	  
 	  return dto ;

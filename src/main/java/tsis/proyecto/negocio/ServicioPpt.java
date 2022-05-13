@@ -112,7 +112,9 @@ public class ServicioPpt {
 		else {
 			
 			Ppt ppt = pptRespuesta.get() ;
-						
+					
+			Ppt pptRespaldo = pptRespuesta.get() ;
+			
 			if ( update.getNombre() != null )
 				ppt.setNombre( update.getNombre() );
 			
@@ -138,8 +140,12 @@ public class ServicioPpt {
 				ppt.setEleccion2( update.getEleccion2() );
 				
 			ppt = pptRepository.save( ppt ) ;
-				
-			return ppt ;
+			
+			if ( !pptRespaldo.equals(ppt) )
+				return ppt ;
+			
+			else
+				return null ;
 		}
 
 	}
@@ -215,6 +221,103 @@ public class ServicioPpt {
 		
 		return this.nombreDelJuego ;
 	
+	}
+	
+	/**
+	 * 
+	 * Si las dos elecciones están vacías, asigna la correspondiente y 
+	 * regresa un "204", si una está vacía, hace la asigna, evalúa el ganador y
+	 * genera un push a la aplicación para que actualize el frontend.
+	 * 
+	 * @param Ppt La instancia que se está jugando
+	 * @param usuarioId El Id del usuario que está haciendo la petición
+	 * @param eleccion La elección que hizo el usuario
+	 * 
+	 * @return String "204" o "push" o "error" si algo falla.
+	 * 
+	 */
+	public String eleccionPpt ( Ppt ppt , long usuarioId , String eleccion ) {
+		
+		String valido = "204" ;
+		String pushFront = "push" ;
+		String error = "error" ;
+		
+		Ppt respuesta = null ;
+		
+		boolean usuario1 = false ;
+		boolean usuario2 = false ;
+		
+		if ( ppt.getEleccion1() == null && ppt.getEleccion2() == null ) {
+			
+			if ( ppt.getUsuarioId1() == usuarioId ) {
+				ppt.setEleccion1(eleccion);
+				usuario1 = true ;
+			}
+			
+			else {
+				ppt.setEleccion2(eleccion);
+				usuario2 = true ;
+			}
+			
+			respuesta = pptRepository.save(ppt) ;
+			
+			if ( usuario1 )
+				if ( respuesta.getEleccion1() == null )
+					return error ;
+			
+			if ( usuario2 )
+				if ( respuesta.getEleccion2() == null )
+					return error ;
+			
+			return valido ;
+			
+		}
+		
+		else {
+			
+			if ( ppt.getEleccion1() != null && ppt.getEleccion2() != null )
+				return error ;
+			
+			else {
+				if ( ppt.getUsuarioId1() == usuarioId )
+					ppt.setEleccion1(eleccion);
+				
+				else 
+					ppt.setEleccion2(eleccion);
+				
+				respuesta = pptRepository.save(ppt) ;
+				
+				if ( respuesta.getEleccion1() != null && respuesta.getEleccion2() != null ) {
+					String eleccion1 = respuesta.getEleccion1() ;
+					String eleccion2 = respuesta.getEleccion2() ;
+					
+					if ( eleccion1.equals(eleccion2) )
+						respuesta.setGanador( -1 );
+					
+					else if ( ( eleccion1.equals( "piedra" ) && eleccion2.equals("tijeras") ) || 
+							( eleccion1.equals( "papel" ) && eleccion2.equals( "piedra" ) ) || 
+							( eleccion1.equals ( "tijeras" ) && eleccion2.equals( "papel" ) ) )
+						respuesta.setGanador ( respuesta.getUsuarioId1() ) ;
+					
+					else
+						respuesta.setGanador ( respuesta.getUsuarioId2() ) ;
+					
+					respuesta = pptRepository.save(respuesta) ;
+					
+					if ( respuesta.getGanador() != 0 )
+						return "204" ;
+					
+					else
+						return error ;
+				}
+				
+				else
+					return error ;
+				
+
+			}
+		}
+		
 	}
 	
 }

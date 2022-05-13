@@ -92,8 +92,36 @@ public class V1ApiController implements V1Api {
         this.request = request;
     }
 
-    public ResponseEntity<Void> actionPpt(@NotNull @Parameter(in = ParameterIn.QUERY, description = "Usuario que realiza acción." ,required=true,schema=@Schema()) @Valid @RequestParam(value = "usuarioId", required = true) Integer usuarioId,@NotNull @Parameter(in = ParameterIn.QUERY, description = "Acción a realizar (\"eleccion\" , \"continuar\")." ,required=true,schema=@Schema()) @Valid @RequestParam(value = "action", required = true) String action,@NotNull @Parameter(in = ParameterIn.QUERY, description = "Lo que el usuario eligió(Para \"eleccion\": \"piedra\", \"papel\" o \"tijeras\"; para \"continuar\": \"true\" o \"false\")." ,required=true,schema=@Schema()) @Valid @RequestParam(value = "eleccion", required = true) String eleccion,@Parameter(in = ParameterIn.PATH, description = "El id del juego.", required=true, schema=@Schema()) @PathVariable("juegoId") Integer juegoId,@Parameter(in = ParameterIn.DEFAULT, description = "", schema=@Schema()) @Valid @RequestBody PptsJuegoIdBody body) {
+    public ResponseEntity<Void> actionPpt(@NotNull @Parameter(in = ParameterIn.QUERY, description = "Usuario que realiza acción." ,required=true,schema=@Schema()) @Valid @RequestParam(value = "usuarioId", required = true) Long usuarioId,@NotNull @Parameter(in = ParameterIn.QUERY, description = "Acción a realizar (\"eleccion\" , \"continuar\")." ,required=true,schema=@Schema()) @Valid @RequestParam(value = "action", required = true) String action,@NotNull @Parameter(in = ParameterIn.QUERY, description = "Lo que el usuario eligió(Para \"eleccion\": \"piedra\", \"papel\" o \"tijeras\"; para \"continuar\": \"true\" o \"false\")." ,required=true,schema=@Schema()) @Valid @RequestParam(value = "eleccion", required = true) String eleccion,@Parameter(in = ParameterIn.PATH, description = "El id del juego.", required=true, schema=@Schema()) @PathVariable("pptId") Long pptId) {
         String accept = request.getHeader("Accept");
+        
+        Ppt ppt = servicioPpt.getPpt( pptId ) ;
+        
+        if ( ppt == null )
+        	throw new ResponseStatusException(HttpStatus.NOT_FOUND) ;
+        
+        //if ( eleccion != "piedra" && eleccion != "papel" && eleccion != "tijeras" && eleccion != "true" && eleccion != "false" )
+        	//throw new ResponseStatusException(HttpStatus.BAD_REQUEST , "La elección no es válida") ;
+        
+        //if ( action != "eleccion" && action != "continuar" )
+        	//throw new ResponseStatusException(HttpStatus.BAD_REQUEST , "La acción no es válida") ;
+        
+        //if ( servicioUsuario.findById(usuarioId) == null )
+        //	throw new ResponseStatusException(HttpStatus.BAD_REQUEST , "El usuario no es válido") ;
+
+        if ( action.equals( "eleccion" ) ) {
+        	
+        	String respuesta = servicioPpt.eleccionPpt(ppt , usuarioId , eleccion ) ;
+        	
+        	if ( respuesta.equals("204") )
+        		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT) ;
+        	else if ( respuesta.equals("error") )
+        		throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR) ;
+        	else
+        		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT) ;
+
+        }
+        
         return new ResponseEntity<Void>(HttpStatus.NOT_IMPLEMENTED);
     }
 
@@ -148,7 +176,7 @@ public class V1ApiController implements V1Api {
         	        	
             try {
             	
-            	Ppt ppt = servicioPpt.createPpt( dto.getUsuarioId1() , dto.getUsuarioId1() ) ;
+            	Ppt ppt = servicioPpt.createPpt( dto.getUsuarioId1() , dto.getUsuarioId2() ) ;
             	
             	if ( ppt != null ) {
             		dto = dto.pptToDto(ppt) ;

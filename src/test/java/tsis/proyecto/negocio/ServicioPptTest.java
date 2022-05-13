@@ -354,5 +354,91 @@ public class ServicioPptTest {
 		assertEquals( "Piedra, papel o tijeras" , servicio.getNombreDelJuego() , "Deberia ser \"Piedra, papel o tijeras\"" );
 
 	}
+	
+	@Test
+	public void testEleccionPpt () {
+		
+		// Variables a utilizar
+		
+		String eleccion = "Piedra" ;
+		
+		long usuarioId ;
+		
+		Ppt ppt = new Ppt () ;
+		
+		Ppt pptRespuesta = new Ppt () ;
+		
+		String respuesta ;
+		
+		// Valores iniciales
+		
+		ppt.setPptId( 1 );
+		ppt.setUsuarioId1( 1 );
+		ppt.setUsuarioId2( 2 );
+		
+		pptRespuesta.setPptId( 1 );
+		pptRespuesta.setUsuarioId1( 1 );
+		pptRespuesta.setUsuarioId2( 2 );
+		
+		// Prueba 1: Hace cambios en la elección de usuario 1
+		
+		// Valores iniciales
+		
+		usuarioId = 1 ;
+		
+		ppt.setEleccion1(null);
+		ppt.setEleccion2(null);
+		
+		pptRespuesta.setEleccion1( eleccion );
+		
+		when ( pptRepository.save( any ( Ppt.class ) ) ).thenReturn( pptRespuesta ) ;
+		
+		respuesta = servicio.eleccionPpt( ppt , usuarioId, eleccion ) ;
+		
+		assertEquals( "204" , respuesta , "Debería regresar 204" );
+		
+		// Prueba 2: Hace cambios en la elección de usuario 2
+		
+		usuarioId = 2 ;
+		
+		ppt.setEleccion1(null);
+		ppt.setEleccion2(null);
+		
+		pptRespuesta.setEleccion1( null );
+		pptRespuesta.setEleccion2( eleccion );
+		
+		when ( pptRepository.save( any ( Ppt.class ) ) ).thenReturn( pptRespuesta ) ;
+		
+		respuesta = servicio.eleccionPpt( ppt , usuarioId, eleccion ) ;
+		
+		assertEquals( "204" , respuesta , "Debería regresar 204" );
+		
+		// Prueba 3: Cuando no se puede guardar el cambio
+	
+		usuarioId = 1 ;
+		
+		ppt.setEleccion1(null);
+		ppt.setEleccion2(null);
+		
+		pptRespuesta.setEleccion2( null );
+		
+		when ( pptRepository.save( any ( Ppt.class ) ) ).thenReturn( pptRespuesta ) ;
+		
+		respuesta = servicio.eleccionPpt( ppt , usuarioId, eleccion ) ;
+		
+		assertEquals( "error" , respuesta , "Debería regresar error" );
+		
+		// Prueba 4: Cuando al menos 1 de las elecciones ya existe
+		
+		usuarioId = 1 ;
+		
+		ppt.setEleccion1( eleccion );
+
+		respuesta = servicio.eleccionPpt( ppt , usuarioId, eleccion ) ;
+		
+		assertEquals( "push" , respuesta , "Debería regresar push" );
+		
+		
+	}
 
 }
