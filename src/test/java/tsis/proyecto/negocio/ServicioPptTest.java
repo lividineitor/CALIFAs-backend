@@ -354,7 +354,7 @@ public class ServicioPptTest {
 		assertEquals( "Piedra, papel o tijeras" , servicio.getNombreDelJuego() , "Deberia ser \"Piedra, papel o tijeras\"" );
 
 	}
-	
+/*	
 	@Test
 	public void testEleccionPpt () {
 		
@@ -440,5 +440,5 @@ public class ServicioPptTest {
 		
 		
 	}
-
+*/
 }

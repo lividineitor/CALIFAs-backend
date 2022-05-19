@@ -43,9 +43,9 @@ public class ServicioJuego {
 	 */
 	/*public Juego createJuego ( Juego juego ) {
 		
-		Juego juegoARetornar = new Juego () ;
+		Juego juegoNuevo = new Juego () ;
 
-		//juegoARetornar = getJuego ( juego.getNombre() ) ;
+		juegoARetornar = getJuego ( juego ) ;
 		
 	}*/
 	
@@ -123,18 +123,21 @@ public class ServicioJuego {
 	 * @throws 
 	 * 
 	 */
-	private Juego getJuego ( String nombreDelJuego ) {
+	/*private Juego getJuego ( Juego juego ) {
 		
-		Juego juego = new Juego () ;
+		Juego juegoNuevo = new Juego () ;
 		
 		Ppt ppt = new Ppt () ;
 		
-		if ( servicioPpt.getNombreDelJuego().equals( nombreDelJuego ) ) 
-		{}		
+		if ( servicioPpt.getNombreDelJuego().equals( juego.getNombre() ) ) 
+		{
+			
+			ppt = servicioPpt.createPpt(juego.get, 0)
+		}		
 	
 		return juego ;
 		
-	}
+	}*/
 	
 	
 	

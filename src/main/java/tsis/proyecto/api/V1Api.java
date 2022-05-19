@@ -73,7 +73,7 @@ public interface V1Api {
         @ApiResponse(responseCode = "501", description = "Operación no implementada.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Error.class))) })
     @RequestMapping(value = "/v1/ppts/{pptId}",
         method = RequestMethod.POST)
-    ResponseEntity<Void> actionPpt(@NotNull @Parameter(in = ParameterIn.QUERY, description = "Usuario que realiza acción." ,required=true,schema=@Schema()) @Valid @RequestParam(value = "usuarioId", required = true) Long usuarioId, @NotNull @Parameter(in = ParameterIn.QUERY, description = "Acción a realizar (\"eleccion\" , \"continuar\")." ,required=true,schema=@Schema()) @Valid @RequestParam(value = "action", required = true) String action, @NotNull @Parameter(in = ParameterIn.QUERY, description = "Lo que el usuario eligió(Para \"eleccion\": \"piedra\", \"papel\" o \"tijeras\"; para \"continuar\": \"true\" o \"false\")." ,required=true,schema=@Schema()) @Valid @RequestParam(value = "eleccion", required = true) String eleccion, @Parameter(in = ParameterIn.PATH, description = "El id del juego.", required=true, schema=@Schema()) @PathVariable("pptId") Long pptId);
+    ResponseEntity<PptDto> actionPpt(@NotNull @Parameter(in = ParameterIn.QUERY, description = "Usuario que realiza acción." ,required=true,schema=@Schema()) @Valid @RequestParam(value = "usuarioId", required = true) Long usuarioId, @NotNull @Parameter(in = ParameterIn.QUERY, description = "Acción a realizar (\"eleccion\" , \"continuar\")." ,required=true,schema=@Schema()) @Valid @RequestParam(value = "action", required = true) String action, @NotNull @Parameter(in = ParameterIn.QUERY, description = "Lo que el usuario eligió(Para \"eleccion\": \"piedra\", \"papel\" o \"tijeras\"; para \"continuar\": \"true\" o \"false\")." ,required=true,schema=@Schema()) @Valid @RequestParam(value = "eleccion", required = true) String eleccion, @Parameter(in = ParameterIn.PATH, description = "El id del juego.", required=true, schema=@Schema()) @PathVariable("pptId") Long pptId);
 
 
     @Operation(summary = "Envia los movimientos del jugador al juego.", description = "Envía las diferentes acciones al juego, con sus respectivas elecciones.", tags={ "volados" })
@@ -498,6 +498,23 @@ public interface V1Api {
     ResponseEntity<InlineResponse200> getUsuarios();
 
 
+    @Operation(summary = "Cierra la sesión.", description = "Regresa una confirmación.", tags={ "usuarios" })
+    @ApiResponses(value = { 
+        @ApiResponse(responseCode = "204", description = "Logout exitosa."),
+        
+        @ApiResponse(responseCode = "400", description = "Consulta mal construida.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Error.class))),
+                
+        @ApiResponse(responseCode = "404", description = "El usuario no existe.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Error.class))),
+        
+        @ApiResponse(responseCode = "500", description = "Error interno durante la consulta.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Error.class))),
+        
+        @ApiResponse(responseCode = "501", description = "Operación no implementada.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Error.class))) })
+    @RequestMapping(value = "/v1/usuarios/logout",
+        consumes = { "application/json" }, 
+        method = RequestMethod.POST)
+    ResponseEntity<Void> logout(@Parameter(in = ParameterIn.DEFAULT, description = "", schema=@Schema()) @Valid @RequestBody Map<String,Object> body);
+    
+    
     @Operation(summary = "Permite actualizar un juego a partir de su id.", description = "Actualiza los datos del juego, excepto el id.", tags={ "juegos" })
     @ApiResponses(value = { 
         @ApiResponse(responseCode = "200", description = "Se actualizó exitosamente el juego.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = JuegoDto.class))),

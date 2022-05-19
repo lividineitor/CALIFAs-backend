@@ -41,6 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -48,11 +49,16 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyEmitter;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import javax.validation.constraints.*;
 import javax.validation.Valid;
@@ -61,6 +67,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2022-05-05T21:21:27.284150-05:00[America/Mexico_City]")
 @CrossOrigin
@@ -77,6 +86,9 @@ public class V1ApiController implements V1Api {
 	
 	@Autowired
 	ServicioUsuario servicioUsuario ;
+	
+	@Autowired
+	ServicioToken servicioToken ;
 
 	
 	
@@ -92,37 +104,31 @@ public class V1ApiController implements V1Api {
         this.request = request;
     }
 
-    public ResponseEntity<Void> actionPpt(@NotNull @Parameter(in = ParameterIn.QUERY, description = "Usuario que realiza acción." ,required=true,schema=@Schema()) @Valid @RequestParam(value = "usuarioId", required = true) Long usuarioId,@NotNull @Parameter(in = ParameterIn.QUERY, description = "Acción a realizar (\"eleccion\" , \"continuar\")." ,required=true,schema=@Schema()) @Valid @RequestParam(value = "action", required = true) String action,@NotNull @Parameter(in = ParameterIn.QUERY, description = "Lo que el usuario eligió(Para \"eleccion\": \"piedra\", \"papel\" o \"tijeras\"; para \"continuar\": \"true\" o \"false\")." ,required=true,schema=@Schema()) @Valid @RequestParam(value = "eleccion", required = true) String eleccion,@Parameter(in = ParameterIn.PATH, description = "El id del juego.", required=true, schema=@Schema()) @PathVariable("pptId") Long pptId) {
+    public ResponseEntity<PptDto> actionPpt(@NotNull @Parameter(in = ParameterIn.QUERY, description = "Usuario que realiza acción." ,required=true,schema=@Schema()) @Valid @RequestParam(value = "usuarioId", required = true) Long usuarioId,@NotNull @Parameter(in = ParameterIn.QUERY, description = "Acción a realizar (\"eleccion\" , \"continuar\")." ,required=true,schema=@Schema()) @Valid @RequestParam(value = "action", required = true) String action,@NotNull @Parameter(in = ParameterIn.QUERY, description = "Lo que el usuario eligió(Para \"eleccion\": \"piedra\", \"papel\" o \"tijeras\"; para \"continuar\": \"true\" o \"false\")." ,required=true,schema=@Schema()) @Valid @RequestParam(value = "eleccion", required = true) String eleccion,@Parameter(in = ParameterIn.PATH, description = "El id del juego.", required=true, schema=@Schema()) @PathVariable("pptId") Long pptId) {
         String accept = request.getHeader("Accept");
         
         Ppt ppt = servicioPpt.getPpt( pptId ) ;
         
         if ( ppt == null )
         	throw new ResponseStatusException(HttpStatus.NOT_FOUND) ;
-        
-        //if ( eleccion != "piedra" && eleccion != "papel" && eleccion != "tijeras" && eleccion != "true" && eleccion != "false" )
-        	//throw new ResponseStatusException(HttpStatus.BAD_REQUEST , "La elección no es válida") ;
-        
-        //if ( action != "eleccion" && action != "continuar" )
-        	//throw new ResponseStatusException(HttpStatus.BAD_REQUEST , "La acción no es válida") ;
-        
-        //if ( servicioUsuario.findById(usuarioId) == null )
-        //	throw new ResponseStatusException(HttpStatus.BAD_REQUEST , "El usuario no es válido") ;
 
         if ( action.equals( "eleccion" ) ) {
         	
-        	String respuesta = servicioPpt.eleccionPpt(ppt , usuarioId , eleccion ) ;
+        	Ppt respuesta = servicioPpt.eleccionPpt(ppt , usuarioId , eleccion ) ;
         	
-        	if ( respuesta.equals("204") )
-        		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT) ;
-        	else if ( respuesta.equals("error") )
+        	if ( respuesta != null ) {        			
+        			PptDto dto = new PptDto () ;
+        			
+        			dto = dto.pptToDto( respuesta ) ;
+        			
+        			return ResponseEntity.status( HttpStatus.OK).body(dto) ;
+        	}
+        	else 
         		throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR) ;
-        	else
-        		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT) ;
 
         }
         
-        return new ResponseEntity<Void>(HttpStatus.NOT_IMPLEMENTED);
+        return new ResponseEntity<PptDto>(HttpStatus.NOT_IMPLEMENTED);
     }
 
     public ResponseEntity<Void> actionVolados(@Parameter(in = ParameterIn.PATH, description = "Identificador del juego.", required=true, schema=@Schema()) @PathVariable("juegoId") Integer juegoId,@NotNull @Parameter(in = ParameterIn.QUERY, description = "Identificador del usuario." ,required=true,schema=@Schema()) @Valid @RequestParam(value = "usuarioId", required = true) Integer usuarioId,@NotNull @Parameter(in = ParameterIn.QUERY, description = "Eleccion del jugador en la partida." ,required=true,schema=@Schema()) @Valid @RequestParam(value = "eleccion", required = true) String eleccion,@NotNull @Parameter(in = ParameterIn.QUERY, description = "Accion que toma el jugador." ,required=true,schema=@Schema()) @Valid @RequestParam(value = "accion", required = true) Boolean accion) {
@@ -146,22 +152,20 @@ public class V1ApiController implements V1Api {
 
     public ResponseEntity<JuegoDto> createJuego(@Parameter(in = ParameterIn.DEFAULT, description = "", schema=@Schema()) @Valid @RequestBody Map<String,Object> body) {
         String accept = request.getHeader("Accept");
-        if (accept != null && accept.contains("application/json")) {
-            /*try {
+        /*if (accept != null && accept.contains("application/json")) {
             	
-            	JuegoDto juegoDto = new JuegoDto() ;
+            	JuegoDto dto = new JuegoDto() ;
             	
-            	juegoDto = juegoDto.mapToDto(body) ;
+            	dto = dto.mapToDto(body) ;
             	
-            	Juego juego = servicioJuego.dtoToJuego(juegoDto) ;
+            	Juego juego = servicioJuego.dtoToJuego(dto) ;
             	
             	juego = servicioJuego.createJuego(juego) ;
             	
-            	juegoDto ;
+            	dto = dto.toDto(juego) ;
             	
-            	return ResponseEntity.status(HttpStatus.CREATED).body(juegoDto) ;
-            }*/
-        }
+            	return ResponseEntity.status(HttpStatus.CREATED).body(dto) ;
+        }*/
 
         return new ResponseEntity<JuegoDto>(HttpStatus.NOT_IMPLEMENTED);
     }
@@ -495,6 +499,38 @@ public class V1ApiController implements V1Api {
         return new ResponseEntity<InlineResponse200>(HttpStatus.NOT_IMPLEMENTED);
     }
 
+    public ResponseEntity<Void> logout( @Parameter(in = ParameterIn.DEFAULT, description = "", schema=@Schema()) @Valid @RequestBody Map<String,Object> body ) {        	
+        // Validamos que los datos sean correctos
+    	if ( body.containsKey("usuarioId") ) {
+			if ( body.get( "usuarioId" ) instanceof Integer ) {
+				body.put("usuarioId", Long.valueOf( ( Integer ) body.get( "usuarioId" ) ) ) ;
+			}
+			
+			long usuarioId = ( Long ) body.get("usuarioId") ;
+			
+			Token token = servicioToken.getToken(usuarioId) ;
+			
+			if ( token != null ) {
+				boolean resultado = servicioToken.deleteTokenById( token.getTokenId()) ;
+				
+				if ( resultado ) {
+					return new ResponseEntity<Void>(HttpStatus.NO_CONTENT) ;
+				}
+				
+				else
+					throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR) ;
+			}
+			
+			else
+				throw new ResponseStatusException(HttpStatus.NOT_FOUND) ;
+			
+		}
+		
+		else 
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST) ;
+	    
+    }
+    
     public ResponseEntity<JuegoDto> updateJuego(@Parameter(in = ParameterIn.PATH, description = "El id del juego.", required=true, schema=@Schema()) @PathVariable("juegoId") Integer juegoId,@Parameter(in = ParameterIn.DEFAULT, description = "", schema=@Schema()) @Valid @RequestBody JuegosJuegoIdBody body) {
         String accept = request.getHeader("Accept");
         if (accept != null && accept.contains("application/json")) {
@@ -546,5 +582,6 @@ public class V1ApiController implements V1Api {
 
         return new ResponseEntity<UsuarioDto>(HttpStatus.NOT_IMPLEMENTED);
     }
+
 
 }

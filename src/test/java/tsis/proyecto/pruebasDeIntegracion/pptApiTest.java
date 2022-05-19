@@ -69,9 +69,11 @@ public class pptApiTest {
 		//assertEquals ( responseEntity.getBody() , dto.get() ) ;
 	}
 	
+	/*
 	@Test
 	public void testPostIndividual() {
 		fail("Not yet implemented");
 	}
 
+*/
 }

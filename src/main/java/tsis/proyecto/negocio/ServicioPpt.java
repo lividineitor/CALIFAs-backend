@@ -267,11 +267,7 @@ public class ServicioPpt {
 	 * @return String "204" o "push" o "error" si algo falla.
 	 * 
 	 */
-	public String eleccionPpt ( Ppt ppt , long usuarioId , String eleccion ) {
-		
-		String valido = "204" ;
-		String pushFront = "push" ;
-		String error = "error" ;
+	public Ppt eleccionPpt ( Ppt ppt , long usuarioId , String eleccion ) {
 		
 		Ppt respuesta = null ;
 		
@@ -294,20 +290,20 @@ public class ServicioPpt {
 			
 			if ( usuario1 )
 				if ( respuesta.getEleccion1() == null )
-					return error ;
+					return null ;
 			
 			if ( usuario2 )
 				if ( respuesta.getEleccion2() == null )
-					return error ;
+					return null ;
 			
-			return valido ;
+			return respuesta ;
 			
 		}
 		
 		else {
 			
 			if ( ppt.getEleccion1() != null && ppt.getEleccion2() != null )
-				return error ;
+				return null ;
 			
 			else {
 				if ( ppt.getUsuarioId1() == usuarioId )
@@ -336,14 +332,14 @@ public class ServicioPpt {
 					respuesta = pptRepository.save(respuesta) ;
 					
 					if ( respuesta.getGanador() != 0 )
-						return "204" ;
+						return respuesta ;
 					
 					else
-						return error ;
+						return null ;
 				}
 				
 				else
-					return error ;
+					return null ;
 				
 
 			}
